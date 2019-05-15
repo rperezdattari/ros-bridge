@@ -228,6 +228,7 @@ class CarlaAckermannControl(object):
         self.set_target_speed(ros_ackermann_drive.speed)
         self.set_target_accel(ros_ackermann_drive.acceleration)
         self.set_target_jerk(ros_ackermann_drive.jerk)
+        self.new_data_available()
 
     def set_target_steering_angle(self, target_steering_angle):
         """
@@ -283,11 +284,10 @@ class CarlaAckermannControl(object):
         if not self.info.output.hand_brake:
             self.update_drive_vehicle_control_command()
 
-            # only send out the Carla Control Command if AckermannDrive messages are
-            # received in the last second (e.g. to allows manually controlling the vehicle)
-            if (self.lastAckermannMsgReceived + datetime.timedelta(0, 1)) > \
-                    datetime.datetime.now():
-                self.carla_control_publisher.publish(self.info.output)
+        # only send out the Carla Control Command if AckermannDrive messages are
+        # received in the last second (e.g. to allows manually controlling the vehicle)
+        if (self.lastAckermannMsgReceived + datetime.timedelta(0, 1)) > datetime.datetime.now():
+            self.carla_control_publisher.publish(self.info.output)
 
     def control_steering(self):
         """
@@ -489,22 +489,16 @@ class CarlaAckermannControl(object):
         self.info.current.speed = current_speed
         self.info.current.speed_abs = abs(current_speed)
 
-    def run(self):
+    def new_data_available(self):
         """
 
         Control loop
 
         :return:
         """
-
-        while not rospy.is_shutdown():
-            self.update_current_values()
-            self.vehicle_control_cycle()
-            self.send_ego_vehicle_control_info_msg()
-            try:
-                self.control_loop_rate.sleep()
-            except rospy.ROSInterruptException:
-                pass
+        self.update_current_values()
+        self.vehicle_control_cycle()
+        self.send_ego_vehicle_control_info_msg()
 
 
 def main():
@@ -516,11 +510,10 @@ def main():
     """
     rospy.init_node('carla_ackermann_control', anonymous=True)
     controller = CarlaAckermannControl()
-    try:
-        controller.run()
-    finally:
-        del controller
-        rospy.loginfo("Done")
+    rospy.spin()
+
+    del controller
+    rospy.loginfo("Done")
 
 
 if __name__ == "__main__":
