@@ -413,6 +413,16 @@ class CarlaAckermannControl(object):
         Apply the current speed_control_target value to throttle/brake commands
         """
 
+        if self.info.target.accel < -6.0:
+            self.info.output.throttle = 0.0
+            self.info.output.brake = 1.0
+            return
+
+        if self.info.current.speed < 2.0 and (self.info.target.speed > self.info.current.speed) and self.info.target.accel > 0:
+            self.info.output.throttle = 1.0
+            self.info.output.brake = 0.0
+            return
+
         # the driving impedance moves the 'zero' acceleration border
         # Interpretation: To reach a zero acceleration the throttle has to pushed
         # down for a certain amount
