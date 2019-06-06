@@ -61,10 +61,24 @@ class EgoVehicle(Vehicle):
                                          append_role_name_topic_postfix=False)
 
         self.vehicle_info_published = False
+        self.vehicle_control_pause = False
+        self.vehicle_control_override = False
 
         self.control_subscriber = rospy.Subscriber(
             self.topic_name() + "/vehicle_control_cmd",
-            CarlaEgoVehicleControl, self.control_command_updated)
+            CarlaEgoVehicleControl, self.control_command_updated, override=False)
+
+        self.manual_control_subscriber = rospy.Subscriber(
+            self.topic_name() + "/vehicle_control_cmd_manual",
+            CarlaEgoVehicleControl, self.control_command_updated, override=True)
+
+        self.control_override_subscriber = rospy.Subscriber(
+            self.topic_name() + "/vehicle_control_manual_override",
+            CarlaEgoVehicleControl, self.control_command_override)
+
+        self.control_pause_subscriber = rospy.Subscriber(
+            self.topic_name() + "/vehicle_control_pause",
+            CarlaEgoVehicleControl, self.control_command_pause)
 
         self.enable_autopilot_subscriber = rospy.Subscriber(
             self.topic_name() + "/enable_autopilot",
@@ -181,7 +195,17 @@ class EgoVehicle(Vehicle):
         self.enable_autopilot_subscriber = None
         super(EgoVehicle, self).destroy()
 
-    def control_command_updated(self, ros_vehicle_control):
+    def control_command_override(self, enable):
+        """
+        """
+        self.vehicle_control_override = enable
+
+    def control_command_pause(self, enable):
+        """
+        """
+        self.vehicle_control_pause = enable
+
+    def control_command_updated(self, ros_vehicle_control, override):
         """
         Receive a CarlaEgoVehicleControl msg and send to CARLA
 
@@ -196,13 +220,14 @@ class EgoVehicle(Vehicle):
         :type ros_vehicle_control: carla_msgs.msg.CarlaEgoVehicleControl
         :return:
         """
-        vehicle_control = VehicleControl()
-        vehicle_control.hand_brake = ros_vehicle_control.hand_brake
-        vehicle_control.brake = ros_vehicle_control.brake
-        vehicle_control.steer = ros_vehicle_control.steer
-        vehicle_control.throttle = ros_vehicle_control.throttle
-        vehicle_control.reverse = ros_vehicle_control.reverse
-        self.carla_actor.apply_control(vehicle_control)
+        if override = self.vehicle_control_override and not self.vehicle_control_pause:
+            vehicle_control = VehicleControl()
+            vehicle_control.hand_brake = ros_vehicle_control.hand_brake
+            vehicle_control.brake = ros_vehicle_control.brake
+            vehicle_control.steer = ros_vehicle_control.steer
+            vehicle_control.throttle = ros_vehicle_control.throttle
+            vehicle_control.reverse = ros_vehicle_control.reverse
+            self.carla_actor.apply_control(vehicle_control)
 
     def enable_autopilot_updated(self, enable_auto_pilot):
         """

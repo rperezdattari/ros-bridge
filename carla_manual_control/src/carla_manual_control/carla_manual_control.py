@@ -66,6 +66,7 @@ try:
     from pygame.locals import K_s
     from pygame.locals import K_w
     from pygame.locals import K_b
+    from pygame.locals import K_x
 except ImportError:
     raise RuntimeError('cannot import pygame, make sure pygame package is installed')
 
@@ -158,23 +159,28 @@ class KeyboardControl(object):
 
         self.vehicle_control_manual_override_publisher = rospy.Publisher(
             "/carla/{}/vehicle_control_manual_override".format(self.role_name), Bool, queue_size=1, latch=True)
+        self.vehicle_control_pause_publisher = rospy.Publisher(
+            "/carla/{}/vehicle_control_pause".format(self.role_name), Bool, queue_size=1, latch=True)
         self.vehicle_control_manual_override = False
+        self.vehicle_control_pause = False
         self.auto_pilot_enable_publisher = rospy.Publisher(
             "/carla/{}/enable_autopilot".format(self.role_name), Bool, queue_size=1)
         self.vehicle_control_publisher = rospy.Publisher(
-            "/carla/{}/vehicle_control_cmd".format(self.role_name), CarlaEgoVehicleControl, queue_size=1)
+            "/carla/{}/vehicle_control_cmd_manual".format(self.role_name), CarlaEgoVehicleControl, queue_size=1)
         self._autopilot_enabled = False
         self._control = CarlaEgoVehicleControl()
         self.set_autopilot(self._autopilot_enabled)
         self._steer_cache = 0.0
         self.set_vehicle_control_manual_override(
             self.vehicle_control_manual_override)  # disable manual override
+        self.set_pause_mode(self.vehicle_control_pause)  # disable pause
         self.hud.notification("Press 'H' or '?' for help.", seconds=4.0)
 
     def __del__(self):
         self.auto_pilot_enable_publisher.unregister()
         self.vehicle_control_publisher.unregister()
         self.vehicle_control_manual_override_publisher.unregister()
+        self.vehicle_control_pause_publisher.unregister()
 
     def set_vehicle_control_manual_override(self, enable):
         """
@@ -182,6 +188,13 @@ class KeyboardControl(object):
         """
         self.hud.notification('Set vehicle control manual override to: {}'.format(enable))
         self.vehicle_control_manual_override_publisher.publish((Bool(data=enable)))
+
+    def set_pause_mode(self, enable):
+        """
+        Activate/deactivate pause mode (sending of control commands to CARLA)
+        """
+        self.hud.notification('Set pause mode to: {}'.format(enable))
+        self.vehicle_control_pause_publisher.publish((Bool(data=enable)))
 
     def set_autopilot(self, enable):
         """
@@ -207,6 +220,9 @@ class KeyboardControl(object):
                 elif event.key == K_b:
                     self.vehicle_control_manual_override = not self.vehicle_control_manual_override
                     self.set_vehicle_control_manual_override(self.vehicle_control_manual_override)
+                elif event.key == K_x:
+                    self.vehicle_control_pause = not self.vehicle_control_pause
+                    self.set_pause_mode(self.vehicle_control_pause)
                 if event.key == K_q:
                     self._control.gear = 1 if self._control.reverse else -1
                 elif event.key == K_m:
