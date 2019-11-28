@@ -19,6 +19,8 @@ from distutils.version import LooseVersion
 from threading import Thread, Lock, Event
 import pkg_resources
 import rospy
+import random
+import logging
 
 import carla
 
@@ -486,8 +488,33 @@ def main():
             host=parameters['host'],
             port=parameters['port'])
         carla_client.set_timeout(2000)
-
         carla_world = carla_client.get_world()
+        blueprintsWalkers = carla_world.get_blueprint_library().filter("walker.pedestrian.*")
+        walker_bp = random.choice(blueprintsWalkers)
+
+        # 1. take all the random locations to spawn
+        spawn_points = []
+        for i in range(1):
+            spawn_point = carla.Transform()
+            spawn_point.location = carla_world.get_random_location_from_navigation()
+            if (spawn_point.location != None):
+                spawn_points.append(spawn_point)
+
+        # 2. build the batch of commands to spawn the pedestrians
+        batch = []
+        walker_bp = random.choice(blueprintsWalkers)
+        batch.append(carla.command.SpawnActor(walker_bp, spawn_point))
+        spawn_point[0].location.x = 15.0
+        spawn_point[0].location.y = 0.0
+
+        # apply the batch
+        walkers_list = []
+        results = carla_client.apply_batch_sync(batch, True)
+        for i in range(len(results)):
+            if results[i].error:
+                logging.error(results[i].error)
+            else:
+                walkers_list.append({"id": results[i].actor_id})
 
         if "town" in parameters and carla_world.get_map().name != parameters["town"]:
             rospy.loginfo("Loading new town: {} (previous: {})".format(

@@ -16,3 +16,4 @@ carla:
     # Only the vehicles within this list are controllable from within ROS.
     # (the vehicle from CARLA is selected which has the attribute 'role_name' set to this value)
     role_name: ["hero", "ego_vehicle"]
+  town: "Town01"

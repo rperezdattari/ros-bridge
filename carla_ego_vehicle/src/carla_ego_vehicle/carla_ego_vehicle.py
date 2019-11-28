@@ -247,7 +247,7 @@ class CarlaEgoVehicle(object):
         # wait for ros-bridge to set up CARLA world
         rospy.loginfo("Waiting for CARLA world (topic: /carla/world_info)...")
         try:
-            rospy.wait_for_message("/carla/world_info", CarlaWorldInfo, timeout=10.0)
+            rospy.wait_for_message("/carla/world_info", CarlaWorldInfo, timeout=30.0)
         except rospy.ROSException as e:
             rospy.logerr("Timeout while waiting for world info!")
             raise e

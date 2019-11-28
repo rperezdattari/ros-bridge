@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated />
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="7fa327c9-1e67-4a86-b3e4-7a8eccf30b56" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/carla_manual_control/src/carla_manual_control/carla_manual_control.py" beforeDir="false" afterPath="$PROJECT_DIR$/carla_manual_control/src/carla_manual_control/carla_manual_control.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/carla_ros_bridge/config/settings.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/carla_ros_bridge/config/settings.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/carla_ros_bridge/launch/carla_ros_bridge_with_example_ego_vehicle.launch" beforeDir="false" afterPath="$PROJECT_DIR$/carla_ros_bridge/launch/carla_ros_bridge_with_example_ego_vehicle.launch" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py" beforeDir="false" afterPath="$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/ros_bridge$bridge.coverage" NAME="bridge Coverage Results" MODIFIED="1574962566828" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/carla_ego_vehicle/launch/carla_ego_vehicle.launch">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="249">
+              <caret line="27" column="65" selection-start-line="27" selection-start-column="65" selection-end-line="27" selection-end-column="65" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/carla_ros_bridge/launch/carla_ros_bridge_with_example_ego_vehicle.launch">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="171">
+              <caret line="9" selection-start-line="9" selection-end-line="9" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/carla_ros_bridge/launch/carla_ros_bridge.launch">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="325">
+              <caret line="30" column="3" lean-forward="true" selection-start-line="30" selection-start-column="3" selection-end-line="30" selection-end-column="3" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="299">
+              <caret line="507" column="33" selection-start-line="507" selection-start-column="33" selection-end-line="507" selection-end-column="33" />
+              <folding>
+                <element signature="e#338#380#0" expanded="true" />
+                <element signature="e#6038#7117#0" />
+                <element signature="e#7167#9035#0" />
+                <element signature="e#9093#10378#0" />
+                <element signature="e#10886#12620#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file:///opt/ros/melodic/lib/python2.7/dist-packages/rospy/msproxy.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="213">
+              <caret line="124" lean-forward="true" selection-start-line="124" selection-end-line="124" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/walker.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="893">
+              <caret line="61" column="34" lean-forward="true" selection-start-line="61" selection-start-column="34" selection-end-line="61" selection-end-column="34" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/carla_ros_bridge/config/settings.yaml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="342">
+              <caret line="18" column="16" selection-start-line="18" selection-start-column="16" selection-end-line="18" selection-end-column="16" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>CarlaActorList</find>
+      <find>get_blueprint_library</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/carla_manual_control/src/carla_manual_control/carla_manual_control.py" />
+        <option value="$PROJECT_DIR$/carla_ros_bridge/config/settings.yaml" />
+        <option value="$PROJECT_DIR$/carla_ros_bridge/launch/carla_ros_bridge_with_example_ego_vehicle.launch" />
+        <option value="$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py" />
+        <option value="$PROJECT_DIR$/carla_ros_bridge/launch/carla_ros_bridge.launch" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="67" />
+    <option name="y" value="25" />
+    <option name="width" value="1853" />
+    <option name="height" value="1055" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_ego_vehicle" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_ego_vehicle" type="462c0819:PsiDirectoryNode" />
+              <item name="config" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_ego_vehicle" type="462c0819:PsiDirectoryNode" />
+              <item name="launch" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_manual_control" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_manual_control" type="462c0819:PsiDirectoryNode" />
+              <item name="launch" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_manual_control" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_manual_control" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_manual_control" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_ros_bridge" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_ros_bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="config" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_ros_bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="launch" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_ros_bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_ros_bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_ros_bridge" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_ros_bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../recorder" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="bridge" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="ros-bridge" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/usr/bin/python2.7" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7fa327c9-1e67-4a86-b3e4-7a8eccf30b56" name="Default Changelist" comment="" />
+      <created>1574161097307</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1574161097307</updated>
+      <workItem from="1574161098663" duration="2203000" />
+      <workItem from="1574338315857" duration="1362000" />
+      <workItem from="1574945167298" duration="172000" />
+      <workItem from="1574945363332" duration="2754000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="6491000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.257886" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32937366" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.39956802" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Database Changes" order="7" />
+      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Terminal" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Python Console" order="12" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Database" order="3" />
+      <window_info anchor="right" id="SciView" order="4" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py</url>
+          <line>132</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py</url>
+          <line>343</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py</url>
+          <line>518</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/carla_ego_vehicle/config/sensors.json">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/carla_manual_control/launch/carla_manual_control.launch">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/carla_ros_bridge/launch/carla_ros_bridge_with_rviz.launch">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="38">
+          <caret line="2" selection-start-line="2" selection-end-line="2" selection-end-column="112" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/carla_manual_control/src/carla_manual_control/carla_manual_control.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="579">
+          <caret line="462" column="35" selection-start-line="462" selection-start-column="35" selection-end-line="462" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/carla_ros_bridge/test/ros_bridge_client.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1287" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/carla_ego_vehicle/launch/carla_example_ego_vehicle.launch">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/carla_ros_bridge/config/settings.yaml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="18" column="16" selection-start-line="18" selection-start-column="16" selection-end-line="18" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/carla_ego_vehicle/launch/carla_ego_vehicle.launch">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="249">
+          <caret line="27" column="65" selection-start-line="27" selection-start-column="65" selection-end-line="27" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/ego_vehicle.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#688#11708#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/walker.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="893">
+          <caret line="61" column="34" lean-forward="true" selection-start-line="61" selection-start-column="34" selection-end-line="61" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/carla_ros_bridge/launch/carla_ros_bridge_with_example_ego_vehicle.launch">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="9" selection-start-line="9" selection-end-line="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///opt/ros/melodic/lib/python2.7/dist-packages/rospy/msproxy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="213">
+          <caret line="124" lean-forward="true" selection-start-line="124" selection-end-line="124" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="507" column="33" selection-start-line="507" selection-start-column="33" selection-end-line="507" selection-end-column="33" />
+          <folding>
+            <element signature="e#338#380#0" expanded="true" />
+            <element signature="e#6038#7117#0" />
+            <element signature="e#7167#9035#0" />
+            <element signature="e#9093#10378#0" />
+            <element signature="e#10886#12620#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/carla_ros_bridge/launch/carla_ros_bridge.launch">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="325">
+          <caret line="30" column="3" lean-forward="true" selection-start-line="30" selection-start-column="3" selection-end-line="30" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
