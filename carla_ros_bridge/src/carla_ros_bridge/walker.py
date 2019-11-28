@@ -15,7 +15,7 @@ from derived_object_msgs.msg import Object
 from carla_ros_bridge.traffic_participant import TrafficParticipant
 from carla_msgs.msg import CarlaWalkerControl
 from carla import WalkerControl
-
+import carla
 
 class Walker(TrafficParticipant):
 
@@ -47,6 +47,7 @@ class Walker(TrafficParticipant):
         self.control_subscriber = rospy.Subscriber(
             self.get_topic_prefix() + "/walker_control_cmd",
             CarlaWalkerControl, self.control_command_updated)
+        self.my_actor = carla_actor
 
     def control_command_updated(self, ros_walker_control):
         """
@@ -63,9 +64,13 @@ class Walker(TrafficParticipant):
         walker_control.direction.x = ros_walker_control.direction.x
         walker_control.direction.y = -ros_walker_control.direction.y
         walker_control.direction.z = ros_walker_control.direction.z
+
+        print("Speed: " +str(ros_walker_control.speed))
         walker_control.speed = ros_walker_control.speed
         walker_control.jump = ros_walker_control.jump
-        self.carla_actor.apply_control(walker_control)
+
+        #loc = carla.Location(30, 1, 0.1)
+        #self.my_actor.go_to_location(loc)
 
     def get_classification(self):
         """

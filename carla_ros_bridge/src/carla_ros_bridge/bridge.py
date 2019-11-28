@@ -279,6 +279,8 @@ class CarlaRosBridge(object):
 
         if new_actors:
             for carla_actor in self.carla_world.get_actors(list(new_actors)):
+                if carla_actor.id == 296:
+                    print("hello")
                 self._create_actor(carla_actor)
 
         if deleted_actors:
@@ -395,6 +397,18 @@ class CarlaRosBridge(object):
         elif carla_actor.type_id.startswith("spectator"):
             actor = Spectator(carla_actor, parent, self.comm)
         elif carla_actor.type_id.startswith("walker"):
+            """
+            walker_controller_bp = self.carla_world.get_blueprint_library().find('controller.ai.walker')
+            loc = carla.Location(17, 1, 0.1)
+            tf = carla.Transform(loc)
+            walker_controller_actor = self.carla_world.spawn_actor(walker_controller_bp, tf, carla_actor)
+            self.carla_world.wait_for_tick()
+
+            walker_controller_actor.start()
+            loc = carla.Location(30, 1, 0.1)
+            walker_controller_actor.go_to_location(loc)
+            walker_controller_actor.set_max_speed(1.4)
+            """
             actor = Walker(carla_actor, parent, self.comm)
         else:
             actor = Actor(carla_actor, parent, self.comm)
@@ -489,23 +503,26 @@ def main():
             port=parameters['port'])
         carla_client.set_timeout(2000)
         carla_world = carla_client.get_world()
+
+        """
         blueprintsWalkers = carla_world.get_blueprint_library().filter("walker.pedestrian.*")
         walker_bp = random.choice(blueprintsWalkers)
 
         # 1. take all the random locations to spawn
         spawn_points = []
-        for i in range(1):
-            spawn_point = carla.Transform()
-            spawn_point.location = carla_world.get_random_location_from_navigation()
-            if (spawn_point.location != None):
-                spawn_points.append(spawn_point)
+        #for i in range(1):
+        #    spawn_point = carla.Transform()
+        #    spawn_point.location = carla_world.get_random_location_from_navigation()
+        #    if (spawn_point.location != None):
+        #        spawn_points.append(spawn_point)
 
         # 2. build the batch of commands to spawn the pedestrians
         batch = []
         walker_bp = random.choice(blueprintsWalkers)
+        loc = carla.Location(17, 1, 0.1)
+        spawn_point = carla.Transform(loc)
         batch.append(carla.command.SpawnActor(walker_bp, spawn_point))
-        spawn_point[0].location.x = 15.0
-        spawn_point[0].location.y = 0.0
+        carla_world.tick()
 
         # apply the batch
         walkers_list = []
@@ -516,12 +533,33 @@ def main():
             else:
                 walkers_list.append({"id": results[i].actor_id})
 
+        # 3. we spawn the walker controller
+        batch = []
+        walker_controller_bp = carla_world.get_blueprint_library().find('controller.ai.walker')
+        for i in range(len(walkers_list)):
+            batch.append(carla.command.SpawnActor(walker_controller_bp, carla.Transform(), walkers_list[i]["id"]))
+
+        # apply the batch
+        results = carla_client.apply_batch_sync(batch, True)
+        for i in range(len(results)):
+            if results[i].error:
+                logging.error(results[i].error)
+            else:
+                walkers_list[i]["con"] = results[i].actor_id
+
+        # 4. we put altogether the walkers and controllers id to get the objects from their id
+        all_id = []
+        for i in range(len(walkers_list)):
+            all_id.append(walkers_list[i]["con"])
+            all_id.append(walkers_list[i]["id"])
+        all_actors = carla_world.get_actors(all_id)
+
         if "town" in parameters and carla_world.get_map().name != parameters["town"]:
             rospy.loginfo("Loading new town: {} (previous: {})".format(
                 parameters["town"], carla_world.get_map().name))
             carla_world = carla_client.load_world(parameters["town"])
             carla_world.tick()
-
+        """
         carla_bridge = CarlaRosBridge(carla_client.get_world(), parameters)
         carla_bridge.run()
     finally:
