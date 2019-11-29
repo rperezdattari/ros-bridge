@@ -19,6 +19,8 @@ from distutils.version import LooseVersion
 from threading import Thread, Lock, Event
 import pkg_resources
 import rospy
+import random
+import logging
 
 import carla
 
@@ -42,6 +44,7 @@ from carla_ros_bridge.walker import Walker
 from carla_ros_bridge.debug_helper import DebugHelper
 from carla_msgs.msg import CarlaActorList, CarlaActorInfo, CarlaControl
 
+import atexit
 
 class CarlaRosBridge(object):
 
@@ -75,6 +78,10 @@ class CarlaRosBridge(object):
         self.shutdown = Event()
         # set carla world settings
         self.carla_settings = carla_world.get_settings()
+
+        if "pedestrian" in self.parameters:
+            ped_params = self.parameters["pedestrian"]
+            self.add_pedestrian(ped_params)
 
         # workaround: settings can only applied within non-sync mode
         if self.carla_settings.synchronous_mode:
@@ -141,6 +148,28 @@ class CarlaRosBridge(object):
                                                filtered_id=None))
         self.debug_helper = DebugHelper(carla_world.debug)
 
+    def add_pedestrian(self,params):
+        blueprintsWalkers = random.choice(self.carla_world.get_blueprint_library().filter('walker.*'))
+        blueprintsWalkers.set_attribute('role_name', "ped")
+        spawn_points = []
+        spawn_point = carla.Transform()
+        pos = params['position']
+        loc = carla.Location(pos[0],pos[1],pos[2])
+        if (loc != None):
+            spawn_point.location = loc
+            spawn_points.append(spawn_point)
+        # 2. we spawn the walker object
+        batch = []
+        for spawn_point in spawn_points:
+            # set as not invencible
+            if blueprintsWalkers.has_attribute('is_invincible'):
+                blueprintsWalkers.set_attribute('is_invincible', 'false')
+            result = self.carla_world.try_spawn_actor(blueprintsWalkers, spawn_point)
+
+            if result is None:
+                rospy.logerr("Failed to add the pedestrian due to collision")
+
+    @atexit.register
     def destroy(self):
         """
         Function to destroy this object.

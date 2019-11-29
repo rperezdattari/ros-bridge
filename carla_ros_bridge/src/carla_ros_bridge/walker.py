@@ -63,6 +63,8 @@ class Walker(TrafficParticipant):
         walker_control.direction.x = ros_walker_control.direction.x
         walker_control.direction.y = -ros_walker_control.direction.y
         walker_control.direction.z = ros_walker_control.direction.z
+
+        print("Speed: " +str(ros_walker_control.speed))
         walker_control.speed = ros_walker_control.speed
         walker_control.jump = ros_walker_control.jump
         self.carla_actor.apply_control(walker_control)
