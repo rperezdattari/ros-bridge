@@ -172,11 +172,12 @@ class CarlaRosBridge(object):
             spawn_points.append(spawn_point)
         # 2. we spawn the walker object
         batch = []
+        walker_controller_bp = self.carla_world.get_blueprint_library().find('controller.ai.walker')
         for spawn_point in spawn_points:
             # set as not invencible
             if blueprintsWalkers.has_attribute('is_invincible'):
                 blueprintsWalkers.set_attribute('is_invincible', 'false')
-            result = self.carla_world.try_spawn_actor(blueprintsWalkers, spawn_point)
+            result = carla.command.SpawnActor(walker_controller_bp, spawn_point)
 
             if result is None:
                 rospy.logerr("Failed to add the pedestrian due to collision")
@@ -605,7 +606,7 @@ def main():
             carla_world = carla_client.load_world(parameters["town"])
             carla_world.tick()
         """
-        carla_bridge = CarlaRosBridge(carla_client.get_world(), parameters)
+        carla_bridge = CarlaRosBridge(carla_world, parameters)
         carla_bridge.run()
     finally:
         del carla_world
