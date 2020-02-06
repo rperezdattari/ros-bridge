@@ -34,7 +34,9 @@ from carla_ros_bridge.spectator import Spectator
 from carla_ros_bridge.traffic import Traffic, TrafficLight
 from carla_ros_bridge.vehicle import Vehicle
 from carla_ros_bridge.lidar import Lidar
+from carla_ros_bridge.radar import Radar
 from carla_ros_bridge.gnss import Gnss
+from carla_ros_bridge.imu import ImuSensor
 from carla_ros_bridge.ego_vehicle import EgoVehicle
 from carla_ros_bridge.collision_sensor import CollisionSensor
 from carla_ros_bridge.lane_invasion_sensor import LaneInvasionSensor
@@ -42,6 +44,7 @@ from carla_ros_bridge.camera import Camera, RgbCamera, DepthCamera, SemanticSegm
 from carla_ros_bridge.object_sensor import ObjectSensor
 from carla_ros_bridge.walker import Walker
 from carla_ros_bridge.debug_helper import DebugHelper
+from carla_ros_bridge.traffic_lights_sensor import TrafficLightsSensor
 from carla_msgs.msg import CarlaActorList, CarlaActorInfo, CarlaControl
 
 import atexit
@@ -151,6 +154,12 @@ class CarlaRosBridge(object):
                                                filtered_id=None))
         self.debug_helper = DebugHelper(carla_world.debug)
 
+        # add traffic light pseudo sensor
+        self.pseudo_actors.append(TrafficLightsSensor(parent=None,
+                                                      communication=self.comm,
+                                                      actor_list=self.actors))
+
+
     def add_pedestrian(self,params):
         blueprintsWalkers = random.choice(self.carla_world.get_blueprint_library().filter('walker.*'))
         blueprintsWalkers.set_attribute('role_name', "ped")
@@ -201,7 +210,7 @@ class CarlaRosBridge(object):
         while not self.carla_control_queue.empty():
             command = self.carla_control_queue.get()
 
-        while not command is None and not rospy.is_shutdown():
+        while command is not None and not rospy.is_shutdown():
             self.carla_run_state = command
 
             if self.carla_run_state == CarlaControl.PAUSE:
@@ -414,8 +423,13 @@ class CarlaRosBridge(object):
                         carla_actor, parent, self.comm, self.carla_settings.synchronous_mode)
             elif carla_actor.type_id.startswith("sensor.lidar"):
                 actor = Lidar(carla_actor, parent, self.comm, self.carla_settings.synchronous_mode)
+            elif carla_actor.type_id.startswith("sensor.other.radar"):
+                actor = Radar(carla_actor, parent, self.comm, self.carla_settings.synchronous_mode)
             elif carla_actor.type_id.startswith("sensor.other.gnss"):
                 actor = Gnss(carla_actor, parent, self.comm, self.carla_settings.synchronous_mode)
+            elif carla_actor.type_id.startswith("sensor.other.imu"):
+                actor = ImuSensor(
+                    carla_actor, parent, self.comm, self.carla_settings.synchronous_mode)
             elif carla_actor.type_id.startswith("sensor.other.collision"):
                 actor = CollisionSensor(
                     carla_actor, parent, self.comm, self.carla_settings.synchronous_mode)
@@ -532,6 +546,7 @@ def main():
             host=parameters['host'],
             port=parameters['port'])
         carla_client.set_timeout(2000)
+
         carla_world = carla_client.get_world()
 
         """
