@@ -15,8 +15,7 @@ have to extend your PYTHONPATH.
 
 To run it:
 
-    roslaunch carla_waypoint_publisher carla_ros_waypoint_publisher.launch
-
+    roslaunch carla_waypoint_publisher carla_waypoint_publisher.launch
 
 ## Set a goal
 
@@ -26,11 +25,10 @@ The prefered way of setting a goal is to click '2D Nav Goal' in RVIZ.
 
 ![set goal](../docs/images/rviz_set_start_goal.png)
 
-## Published waypoints 
+## Published waypoints
 
 The calculated route is published:
 
-|Topic         | Type |
-|--------------|------|
+| Topic                                 | Type                                                                 |
+| ------------------------------------- | -------------------------------------------------------------------- |
 | `/carla/<ego vehicle name>/waypoints` | [nav_msgs.Path](http://docs.ros.org/api/nav_msgs/html/msg/Path.html) |
-
