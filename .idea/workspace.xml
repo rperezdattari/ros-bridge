@@ -11,9 +11,6 @@
   <component name="ChangeListManager">
     <list default="true" id="7fa327c9-1e67-4a86-b3e4-7a8eccf30b56" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/carla_ros_bridge/config/settings.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/carla_ros_bridge/config/settings.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/carla_ros_bridge/launch/carla_ros_bridge.launch" beforeDir="false" afterPath="$PROJECT_DIR$/carla_ros_bridge/launch/carla_ros_bridge.launch" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py" beforeDir="false" afterPath="$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -38,24 +35,29 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/carla_ros_bridge/launch/carla_ros_bridge.launch">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="325">
-              <caret line="30" column="93" selection-start-line="30" selection-start-column="93" selection-end-line="30" selection-end-column="93" />
+            <state relative-caret-position="570">
+              <caret line="30" column="3" selection-start-line="30" selection-start-column="3" selection-end-line="30" selection-end-column="3" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="161" column="50" lean-forward="true" selection-start-line="161" selection-start-column="50" selection-end-line="161" selection-end-column="50" />
+            <state relative-caret-position="418">
+              <caret line="159" column="78" selection-start-line="159" selection-start-column="78" selection-end-line="159" selection-end-column="78" />
               <folding>
                 <element signature="e#338#380#0" expanded="true" />
-                <element signature="e#6067#7146#0" />
-                <element signature="e#7196#9064#0" />
-                <element signature="e#9122#10407#0" />
-                <element signature="e#10454#10859#0" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/carla_manual_control/src/carla_manual_control/carla_manual_control.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="201">
+              <caret line="465" column="24" selection-start-line="465" selection-start-column="24" selection-end-line="465" selection-end-column="24" />
             </state>
           </provider>
         </entry>
@@ -64,16 +66,25 @@
         <entry file="file://$PROJECT_DIR$/carla_ros_bridge/config/settings.yaml">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="361">
-              <caret line="19" column="20" selection-start-line="19" selection-start-column="20" selection-end-line="19" selection-end-column="20" />
+              <caret line="19" column="21" selection-start-line="19" selection-start-column="21" selection-end-line="19" selection-end-column="21" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/carla_ego_vehicle/config/sensors.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="209">
+              <caret line="11" column="12" selection-start-line="11" selection-start-column="12" selection-end-line="11" selection-end-column="12" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/carla_ego_vehicle/src/carla_ego_vehicle/carla_ego_vehicle.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2432">
-              <caret line="139" column="83" selection-start-line="139" selection-start-column="72" selection-end-line="139" selection-end-column="83" />
+            <state relative-caret-position="189">
+              <caret line="195" column="92" selection-start-line="195" selection-start-column="24" selection-end-line="195" selection-end-column="92" />
             </state>
           </provider>
         </entry>
@@ -81,11 +92,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/walker.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="284">
-              <caret line="67" column="38" selection-start-line="67" selection-start-column="38" selection-end-line="67" selection-end-column="38" />
-              <folding>
-                <element signature="e#234#246#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="529">
+              <caret line="68" column="38" selection-start-line="68" selection-start-column="38" selection-end-line="68" selection-end-column="38" />
             </state>
           </provider>
         </entry>
@@ -102,6 +110,7 @@
       <find>walk</find>
       <find>spawn_actor</find>
       <find>apply_batch_sync</find>
+      <find>world</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -116,6 +125,8 @@
         <option value="$PROJECT_DIR$/carla_ros_bridge/config/settings.yaml" />
         <option value="$PROJECT_DIR$/carla_ros_bridge/launch/carla_ros_bridge.launch" />
         <option value="$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py" />
+        <option value="$PROJECT_DIR$/carla_ego_vehicle/config/sensors.json" />
+        <option value="$PROJECT_DIR$/carla_ego_vehicle/src/carla_ego_vehicle/carla_ego_vehicle.py" />
       </list>
     </option>
   </component>
@@ -130,7 +141,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -141,18 +151,55 @@
             <path>
               <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
               <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
-              <item name="carla_ros_bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_ego_vehicle" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
               <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
-              <item name="carla_ros_bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_ego_vehicle" type="462c0819:PsiDirectoryNode" />
               <item name="config" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_infrastructure" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_infrastructure" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_infrastructure" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_infrastructure" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_manual_control" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_manual_control" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ros-bridge" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ros-bridge" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_manual_control" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="carla_manual_control" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -219,12 +266,13 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="18877000" />
+    <option name="totallyTimeSpent" value="20556000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="67" y="25" width="1853" height="1055" extended-state="6" />
+    <frame x="67" y="25" width="2493" height="1055" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.27006087" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.27257866" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -276,8 +324,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/carla_manual_control/src/carla_manual_control/carla_manual_control.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="579">
-          <caret line="462" column="35" selection-start-line="462" selection-start-column="35" selection-end-line="462" selection-end-column="35" />
+        <state relative-caret-position="201">
+          <caret line="465" column="24" selection-start-line="465" selection-start-column="24" selection-end-line="465" selection-end-column="24" />
         </state>
       </provider>
     </entry>
@@ -322,9 +370,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/carla_ego_vehicle/config/sensors.json">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/carla_ego_vehicle/launch/carla_ego_vehicle.launch">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="513">
@@ -332,17 +377,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/carla_ego_vehicle/src/carla_ego_vehicle/carla_ego_vehicle.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2432">
-          <caret line="139" column="83" selection-start-line="139" selection-start-column="72" selection-end-line="139" selection-end-column="83" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/carla_ros_bridge/config/settings.yaml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="361">
-          <caret line="19" column="20" selection-start-line="19" selection-start-column="20" selection-end-line="19" selection-end-column="20" />
+          <caret line="19" column="21" selection-start-line="19" selection-start-column="21" selection-end-line="19" selection-end-column="21" />
         </state>
       </provider>
     </entry>
@@ -353,34 +391,41 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/walker.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="284">
-          <caret line="67" column="38" selection-start-line="67" selection-start-column="38" selection-end-line="67" selection-end-column="38" />
-          <folding>
-            <element signature="e#234#246#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/carla_ros_bridge/launch/carla_ros_bridge.launch">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="325">
-          <caret line="30" column="93" selection-start-line="30" selection-start-column="93" selection-end-line="30" selection-end-column="93" />
+        <state relative-caret-position="570">
+          <caret line="30" column="3" selection-start-line="30" selection-start-column="3" selection-end-line="30" selection-end-column="3" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="161" column="50" lean-forward="true" selection-start-line="161" selection-start-column="50" selection-end-line="161" selection-end-column="50" />
+        <state relative-caret-position="418">
+          <caret line="159" column="78" selection-start-line="159" selection-start-column="78" selection-end-line="159" selection-end-column="78" />
           <folding>
             <element signature="e#338#380#0" expanded="true" />
-            <element signature="e#6067#7146#0" />
-            <element signature="e#7196#9064#0" />
-            <element signature="e#9122#10407#0" />
-            <element signature="e#10454#10859#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/walker.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="529">
+          <caret line="68" column="38" selection-start-line="68" selection-start-column="38" selection-end-line="68" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/carla_ego_vehicle/config/sensors.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="11" column="12" selection-start-line="11" selection-start-column="12" selection-end-line="11" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/carla_ego_vehicle/src/carla_ego_vehicle/carla_ego_vehicle.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="195" column="92" selection-start-line="195" selection-start-column="24" selection-end-line="195" selection-end-column="92" />
         </state>
       </provider>
     </entry>
