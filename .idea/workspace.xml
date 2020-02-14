@@ -10,13 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7fa327c9-1e67-4a86-b3e4-7a8eccf30b56" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/carla_ego_vehicle/config/sensors.json" beforeDir="false" afterPath="$PROJECT_DIR$/carla_ego_vehicle/config/sensors.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/carla_ego_vehicle/launch/carla_ego_vehicle.launch" beforeDir="false" afterPath="$PROJECT_DIR$/carla_ego_vehicle/launch/carla_ego_vehicle.launch" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/carla_ego_vehicle/src/carla_ego_vehicle/carla_ego_vehicle.py" beforeDir="false" afterPath="$PROJECT_DIR$/carla_ego_vehicle/src/carla_ego_vehicle/carla_ego_vehicle.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/carla_ros_bridge/config/settings.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/carla_ros_bridge/config/settings.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py" beforeDir="false" afterPath="$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/sensor.py" beforeDir="false" afterPath="$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/sensor.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -54,8 +48,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/carla_ego_vehicle/src/carla_ego_vehicle/carla_ego_vehicle.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-819">
-              <caret line="183" column="58" selection-start-line="183" selection-start-column="58" selection-end-line="183" selection-end-column="58" />
+            <state relative-caret-position="-490">
+              <caret line="212" column="59" selection-start-line="212" selection-start-column="50" selection-end-line="212" selection-end-column="59" />
               <folding>
                 <element signature="e#578#608#0" expanded="true" />
                 <element signature="e#10966#20876#0" />
@@ -148,8 +142,8 @@
         <option value="$PROJECT_DIR$/carla_ros_bridge/config/settings.yaml" />
         <option value="$PROJECT_DIR$/carla_ego_vehicle/config/sensors.json" />
         <option value="$PROJECT_DIR$/carla_ros_bridge/src/carla_ros_bridge/bridge.py" />
-        <option value="$PROJECT_DIR$/carla_ego_vehicle/src/carla_ego_vehicle/carla_ego_vehicle.py" />
         <option value="$PROJECT_DIR$/carla_ego_vehicle/launch/carla_ego_vehicle.launch" />
+        <option value="$PROJECT_DIR$/carla_ego_vehicle/src/carla_ego_vehicle/carla_ego_vehicle.py" />
       </list>
     </option>
   </component>
@@ -277,12 +271,12 @@
       <workItem from="1581006499482" duration="3815000" />
       <workItem from="1581011069710" duration="888000" />
       <workItem from="1581677694556" duration="1580000" />
-      <workItem from="1581684097447" duration="3379000" />
+      <workItem from="1581684097447" duration="4451000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="35199000" />
+    <option name="totallyTimeSpent" value="36271000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="67" y="25" width="2493" height="1055" extended-state="6" />
@@ -467,8 +461,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/carla_ego_vehicle/src/carla_ego_vehicle/carla_ego_vehicle.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-819">
-          <caret line="183" column="58" selection-start-line="183" selection-start-column="58" selection-end-line="183" selection-end-column="58" />
+        <state relative-caret-position="-490">
+          <caret line="212" column="59" selection-start-line="212" selection-start-column="50" selection-end-line="212" selection-end-column="59" />
           <folding>
             <element signature="e#578#608#0" expanded="true" />
             <element signature="e#10966#20876#0" />
