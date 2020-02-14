@@ -3,7 +3,7 @@
   <arg name='host' default='localhost'/>
   <arg name='port' default='2000'/>
   <arg name="vehicle_filter" default="vehicle.*" />
-  <arg name="sensor_definition_file"/>
+  <arg name="sensor_definition_file" default="$(find carla_ego_vehicle)/config/sensors.json"/>
   <arg name="role_name" default="ego_vehicle"/>
   <!-- use comma separated format "x,y,z,roll,pitch,yaw" -->
   <arg name="spawn_point" default=""/>
@@ -22,7 +22,7 @@
     <node pkg="topic_tools" type="relay" name="goal_relay" args="/move_base_simple/goal /carla/ego_vehicle/goal"/>
     <node pkg="topic_tools" type="relay" name="initialpose_relay" args="/initialpose /carla/ego_vehicle/initialpose"/>
   </group>
-
+<!---->
   <node pkg="carla_ego_vehicle" type="carla_ego_vehicle.py" name="carla_ego_vehicle_$(arg role_name)" output="screen">
     <param name="sensor_definition_file" value="$(arg sensor_definition_file)" />
     <param name="vehicle_filter" value="$(arg vehicle_filter)" />
@@ -30,5 +30,6 @@
     <param name="role_name" value="$(arg role_name)" />
     <param name="spawn_ego_vehicle" value="$(arg spawn_ego_vehicle)" />
   </node>
+
 </launch>
 

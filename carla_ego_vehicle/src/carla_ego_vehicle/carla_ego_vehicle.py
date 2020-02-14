@@ -49,15 +49,23 @@ class CarlaEgoVehicle(object):
         rospy.init_node('ego_vehicle', anonymous=True)
         self.host = rospy.get_param('/carla/host', '127.0.0.1')
         self.port = rospy.get_param('/carla/port', '2000')
-        self.sensor_definition_file = rospy.get_param('~sensor_definition_file')
+        #self.sensor_definition_file = rospy.get_param('~sensor_definition_file') #         self.sensor_definition_file = # rospy.get_param('~sensor_definition_file')
+        self.sensor_definition_file= "/home/bbrito/catkin_ws/src/ros-bridge/carla_ego_vehicle/config/sensors.json"
         self.world = None
         self.player = None
         self.sensor_actors = []
-        self.actor_filter = rospy.get_param('~vehicle_filter', 'vehicle.*')
+
+        self.actor_filter = rospy.get_param('~vehicle_filter', 'vehicle.*') #"vehicle.*"
+        #self.actor_filter = "vehicle.*"
         self.actor_spawnpoint = None
-        self.role_name = rospy.get_param('~role_name', 'ego_vehicle')
+        self.role_name = rospy.get_param('~role_name', 'ego_vehicle') # "ego_vehicle"
+        #self.role_name = "ego_vehicle"
         # check argument and set spawn_point
         spawn_point_param = rospy.get_param('~spawn_point')
+
+        self.pedestrians = None
+
+        #spawn_point_param = "18.0, 7.0, 0.0, 0.0, 0.0, 0.0"
         if spawn_point_param and rospy.get_param('~spawn_ego_vehicle'):
             rospy.loginfo("Using ros parameter for spawnpoint: {}".format(spawn_point_param))
             spawn_point = spawn_point_param.split(',')
@@ -65,7 +73,7 @@ class CarlaEgoVehicle(object):
                 raise ValueError("Invalid spawnpoint '{}'".format(spawn_point_param))
             pose = Pose()
             pose.position.x = float(spawn_point[0])
-            pose.position.y = -float(spawn_point[1])
+            pose.position.y = float(spawn_point[1])
             pose.position.z = float(spawn_point[2])
             quat = quaternion_from_euler(
                 math.radians(float(spawn_point[3])),
@@ -117,11 +125,26 @@ class CarlaEgoVehicle(object):
                 if actor.attributes['role_name'] == self.role_name:
                     self.player = actor
                     break
+
+            # Read sensors from file
+            if not os.path.exists(self.sensor_definition_file):
+                raise RuntimeError(
+                    "Could not read sensor-definition from {}".format(self.sensor_definition_file))
+            json_sensors = None
+            with open(self.sensor_definition_file) as handle:
+                json_sensors = json.loads(handle.read())
+
+            # Set up the sensors
+            self.sensor_actors = self.setup_sensors(json_sensors["sensors"])
+
+            # Spawn Pedestrians
+            self.spawn_pedestrian()
+
         else:
             if self.actor_spawnpoint:
                 spawn_point = carla.Transform()
                 spawn_point.location.x = self.actor_spawnpoint.position.x
-                spawn_point.location.y = -self.actor_spawnpoint.position.y
+                spawn_point.location.y = self.actor_spawnpoint.position.y
                 spawn_point.location.z = self.actor_spawnpoint.position.z + \
                     2  # spawn 2m above ground
                 quaternion = (
@@ -137,34 +160,97 @@ class CarlaEgoVehicle(object):
                                                                          spawn_point.location.y,
                                                                          spawn_point.location.z,
                                                                          spawn_point.rotation.yaw))
+
                 if self.player is not None:
-                    self.destroy()
+                    self.player.set_transform(spawn_point)
                 while self.player is None:
                     self.player = self.world.try_spawn_actor(blueprint, spawn_point)
+
+                if self.pedestrians is not None:
+                    spawn_point = carla.Transform()
+                    spawn_point.location.x = self.actor_spawnpoint.position.x + 10.0
+                    spawn_point.location.y = self.actor_spawnpoint.position.y
+                    spawn_point.location.z = self.actor_spawnpoint.position.z + 2  # spawn 2m above ground
+                    for i in range(0, len(self.pedestrians), 2):
+                        # start walker
+                        self.pedestrians[i].set_transform(spawn_point)
+
             else:
                 if self.player is not None:
                     spawn_point = self.player.get_transform()
                     spawn_point.location.z += 2.0
                     spawn_point.rotation.roll = 0.0
                     spawn_point.rotation.pitch = 0.0
-                    self.destroy()
-                    self.player = self.world.try_spawn_actor(blueprint, spawn_point)
+                    self.player.set_transform(spawn_point)
                 while self.player is None:
                     spawn_points = self.world.get_map().get_spawn_points()
                     spawn_point = secure_random.choice(
                         spawn_points) if spawn_points else carla.Transform()
                     self.player = self.world.try_spawn_actor(blueprint, spawn_point)
 
-        # Read sensors from file
-        if not os.path.exists(self.sensor_definition_file):
-            raise RuntimeError(
-                "Could not read sensor-definition from {}".format(self.sensor_definition_file))
-        json_sensors = None
-        with open(self.sensor_definition_file) as handle:
-            json_sensors = json.loads(handle.read())
+    def spawn_pedestrian(self):
+        # Spawn Pedestrian
+        # Reseting Pedestrian
+        spawn_points = []
+        spawn_point = carla.Transform()
+        spawn_point.location.x = self.actor_spawnpoint.position.x + 10.0
+        spawn_point.location.y = self.actor_spawnpoint.position.y
+        spawn_point.location.z = self.actor_spawnpoint.position.z + 2  # spawn 2m above ground
+        spawn_points.append(spawn_point)
 
-        # Set up the sensors
-        self.sensor_actors = self.setup_sensors(json_sensors["sensors"])
+        blueprintsWalkers = self.world.get_blueprint_library().filter("walker.*")
+        batch = []
+        for point in spawn_points:
+            walker_bp = random.choice(blueprintsWalkers)
+            batch.append(carla.command.SpawnActor(walker_bp, point))
+
+        results = self.client.apply_batch_sync(batch, True)
+        walkers_list = []
+        for i in range(len(results)):
+            if results[i].error:
+                rospy.logerr("Failed to add the pedestrian due to collision")
+            else:
+                walkers_list.append({"id": results[i].actor_id})
+
+        # 3. we spawn the walker controller
+        batch = []
+        walker_controller_bp = self.world.get_blueprint_library().find('controller.ai.walker')
+        for i in range(len(walkers_list)):
+            batch.append(
+                carla.command.SpawnActor(walker_controller_bp, carla.Transform(), walkers_list[i]["id"]))
+
+        # apply the batch
+        results = self.client.apply_batch_sync(batch, True)
+        for i in range(len(results)):
+            if results[i].error:
+                rospy.logerr("Failed to add the pedestrian due to collision")
+            else:
+                walkers_list[i]["con"] = results[i].actor_id
+
+        # 4. we put altogether the walkers and controllers id to get the objects from their id
+        self.all_id = []
+        for i in range(len(walkers_list)):
+            self.all_id.append(walkers_list[i]["con"])
+            self.all_id.append(walkers_list[i]["id"])
+        self.all_actors = self.world.get_actors(self.all_id)
+
+        # wait for a tick to ensure client receives the last transform of the walkers we have just created
+        self.world.wait_for_tick()
+
+        # 5. initialize each controller and set target to walk to (list is [controller, actor, controller, actor ...])
+        for i in range(0, len(self.all_actors), 2):
+            # start walker
+            self.all_actors[i].start()
+            # set walk to random point
+            self.all_actors[i].go_to_location(self.world.get_random_location_from_navigation())
+            # random max speed
+            self.all_actors[i].set_max_speed(1 + random.random())
+
+        rospy.loginfo("Spawn {} at x={} y={} z={} yaw={}".format("Pedestria",
+                                                                 spawn_point.location.x,
+                                                                 spawn_point.location.y,
+                                                                 spawn_point.location.z,
+                                                                 spawn_point.rotation.yaw))
 
     def setup_sensors(self, sensors):
         """
@@ -329,6 +415,14 @@ class CarlaEgoVehicle(object):
             self.player.destroy()
         self.player = None
 
+        # stop pedestrians (list is [controller, actor, controller, actor ...])
+
+        for i in range(0, len(self.all_id), 2):
+            self.all_actors[i].stop()
+
+            # destroy pedestrian (actor and controller)
+            self.client.apply_batch([carla.command.DestroyActor(x) for x in self.all_id])
+
     def run(self):
         """
         main loop
@@ -342,9 +436,9 @@ class CarlaEgoVehicle(object):
             raise e
         rospy.loginfo("CARLA world available. Spawn ego vehicle...")
 
-        client = carla.Client(self.host, self.port)
-        client.set_timeout(2.0)
-        self.world = client.get_world()
+        self.client = carla.Client(self.host, self.port)
+        self.client.set_timeout(2.0)
+        self.world = self.client.get_world()
         self.restart()
         try:
             rospy.spin()

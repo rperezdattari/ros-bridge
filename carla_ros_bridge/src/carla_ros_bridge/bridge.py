@@ -161,12 +161,21 @@ class CarlaRosBridge(object):
 
 
     def add_pedestrian(self,params):
+        print("Adding Pedestrian")
+        """
         blueprintsWalkers = random.choice(self.carla_world.get_blueprint_library().filter('walker.*'))
         blueprintsWalkers.set_attribute('role_name', "ped")
         spawn_points = []
         spawn_point = carla.Transform()
         pos = params['position']
         loc = carla.Location(pos[0],pos[1],pos[2])
+
+        rospy.loginfo("Spawn {} at x={} y={} z={} yaw={}".format("Pedes",
+                                                                 pos[0],
+                                                                 pos[1],
+                                                                 pos[2],
+                                                                 0.0))
+
         if (loc != None):
             spawn_point.location = loc
             spawn_points.append(spawn_point)
@@ -181,7 +190,7 @@ class CarlaRosBridge(object):
 
             if result is None:
                 rospy.logerr("Failed to add the pedestrian due to collision")
-
+        """
     @atexit.register
     def destroy(self):
         """
@@ -333,6 +342,7 @@ class CarlaRosBridge(object):
                         actor.get_parent_id(),
                         actor.get_prefix()))
                     actor.destroy()
+                    print("Done destroying...")
                     del self.actors[id_to_delete]
 
                 # remove pseudo-actors that have actor as parent
@@ -344,6 +354,7 @@ class CarlaRosBridge(object):
                             pseudo_actor.get_parent_id(),
                             pseudo_actor.get_prefix()))
                         pseudo_actor.destroy()
+                        print("Done destroying pseudocator...")
                         del pseudo_actor
                     else:
                         updated_pseudo_actors.append(pseudo_actor)
