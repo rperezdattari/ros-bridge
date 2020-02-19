@@ -80,7 +80,7 @@ class Sensor(Actor):
 
         :return:
         """
-        rospy.loginfo("Destroy Sensor(id={})".format(self.get_id()))
+        rospy.logdebug("Destroy Sensor(id={})".format(self.get_id()))
         if self.carla_actor.is_listening:
             self.carla_actor.stop()
         super(Sensor, self).destroy()

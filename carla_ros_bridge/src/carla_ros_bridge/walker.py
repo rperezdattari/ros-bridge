@@ -68,9 +68,7 @@ class Walker(TrafficParticipant):
         print("Speed: " +str(ros_walker_control.speed))
         walker_control.speed = ros_walker_control.speed
         walker_control.jump = ros_walker_control.jump
-
-        #loc = carla.Location(30, 1, 0.1)
-        #self.my_actor.go_to_location(loc)
+        self.carla_actor.apply_control(walker_control)
 
     def get_classification(self):
         """

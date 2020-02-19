@@ -49,8 +49,8 @@ class CarlaEgoVehicle(object):
         rospy.init_node('ego_vehicle', anonymous=True)
         self.host = rospy.get_param('/carla/host', '127.0.0.1')
         self.port = rospy.get_param('/carla/port', '2000')
-        #self.sensor_definition_file = rospy.get_param('~sensor_definition_file') #         self.sensor_definition_file = # rospy.get_param('~sensor_definition_file')
-        self.sensor_definition_file= "/home/bbrito/catkin_ws/src/ros-bridge/carla_ego_vehicle/config/sensors.json"
+        self.sensor_definition_file = rospy.get_param('~sensor_definition_file') #         self.sensor_definition_file = # rospy.get_param('~sensor_definition_file')
+        #self.sensor_definition_file= "/home/bbrito/catkin_ws/src/ros-bridge/carla_ego_vehicle/config/sensors.json"
         self.world = None
         self.player = None
         self.sensor_actors = []
@@ -73,7 +73,7 @@ class CarlaEgoVehicle(object):
                 raise ValueError("Invalid spawnpoint '{}'".format(spawn_point_param))
             pose = Pose()
             pose.position.x = float(spawn_point[0])
-            pose.position.y = float(spawn_point[1])
+            pose.position.y = -float(spawn_point[1])
             pose.position.z = float(spawn_point[2])
             quat = quaternion_from_euler(
                 math.radians(float(spawn_point[3])),
@@ -130,7 +130,7 @@ class CarlaEgoVehicle(object):
             if self.actor_spawnpoint:
                 spawn_point = carla.Transform()
                 spawn_point.location.x = self.actor_spawnpoint.position.x
-                spawn_point.location.y = self.actor_spawnpoint.position.y
+                spawn_point.location.y = -self.actor_spawnpoint.position.y
                 spawn_point.location.z = self.actor_spawnpoint.position.z + \
                     2  # spawn 2m above ground
                 quaternion = (
