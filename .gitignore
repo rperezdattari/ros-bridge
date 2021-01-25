@@ -2,4 +2,7 @@
 build.gradle
 /CMakeLists.txt
 .catkin_workspace
-*.idea
+
+# IDE
+.vscode
+.idea

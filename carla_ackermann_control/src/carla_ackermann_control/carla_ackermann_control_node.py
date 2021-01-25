@@ -103,6 +103,25 @@ class CarlaAckermannControl(object):
         sys.modules['simple_pid.PID']._current_time = (       # pylint: disable=protected-access
             lambda: rospy.get_rostime().to_sec())
 
+        rospy.set_param(
+            "/carla/" + self.role_name + "/ackermann_control/speed_Kp",
+            rospy.get_param("/carla/ackermann_control/speed_Kp", 0.05))
+        rospy.set_param(
+            "/carla/" + self.role_name + "/ackermann_control/speed_Ki",
+            rospy.get_param("/carla/ackermann_control/speed_Ki", 0.00))
+        rospy.set_param(
+            "/carla/" + self.role_name + "/ackermann_control/speed_Kd",
+            rospy.get_param("/carla/ackermann_control/speed_Kd", 0.50))
+        rospy.set_param(
+            "/carla/" + self.role_name + "/ackermann_control/accel_Kp",
+            rospy.get_param("/carla/ackermann_control/accel_Kp", 0.05))
+        rospy.set_param(
+            "/carla/" + self.role_name + "/ackermann_control/accel_Ki",
+            rospy.get_param("/carla/ackermann_control/accel_Ki", 0.00))
+        rospy.set_param(
+            "/carla/" + self.role_name + "/ackermann_control/accel_Kd",
+            rospy.get_param("/carla/ackermann_control/accel_Kd", 0.05))
+
         self.reconfigure_server = Server(
             EgoVehicleControlParameterConfig,
             namespace="/carla/" + self.role_name + "/ackermann_control",
@@ -234,6 +253,7 @@ class CarlaAckermannControl(object):
         set target sterring angle
         """
         self.info.target.steering_angle = -target_steering_angle
+        print("Max steering angle: " + str(self.info.restrictions.max_steering_angle))
         if abs(self.info.target.steering_angle) > self.info.restrictions.max_steering_angle:
             rospy.logerr("Max steering angle reached, clipping value")
             self.info.target.steering_angle = numpy.clip(
@@ -281,6 +301,7 @@ class CarlaAckermannControl(object):
         self.run_speed_control_loop()
         self.run_accel_control_loop()
         if not self.info.output.hand_brake:
+            print("vehicle_control_cycle")
             self.update_drive_vehicle_control_command()
 
             # only send out the Carla Control Command if AckermannDrive messages are

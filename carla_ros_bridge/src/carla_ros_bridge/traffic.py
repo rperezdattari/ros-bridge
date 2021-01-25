@@ -11,7 +11,8 @@ Classes to handle Carla traffic objects
 """
 
 from carla_ros_bridge.actor import Actor
-from carla_msgs.msg import CarlaTrafficLightStatus
+import carla_common.transforms as trans
+from carla_msgs.msg import CarlaTrafficLightStatus, CarlaTrafficLightInfo
 from carla import TrafficLightState
 
 
@@ -21,21 +22,26 @@ class Traffic(Actor):
     Actor implementation details for traffic objects
     """
 
-    def __init__(self, carla_actor, parent, communication):
+    def __init__(self, uid, name, parent, node, carla_actor):
         """
         Constructor
 
-        :param carla_actor: carla actor object
-        :type carla_actor: carla.Actor
+        :param uid: unique identifier for this object
+        :type uid: int
+        :param name: name identiying this object
+        :type name: string
         :param parent: the parent of this
         :type parent: carla_ros_bridge.Parent
-        :param communication: communication-handle
-        :type communication: carla_ros_bridge.communication
+        :param node: node-handle
+        :type node: carla_ros_bridge.CarlaRosBridge
+        :param carla_actor: carla actor object
+        :type carla_actor: carla.Actor
         """
-        super(Traffic, self).__init__(carla_actor=carla_actor,
+        super(Traffic, self).__init__(uid=uid,
+                                      name=name,
                                       parent=parent,
-                                      communication=communication,
-                                      prefix='traffic')
+                                      node=node,
+                                      carla_actor=carla_actor)
 
 
 class TrafficLight(Actor):
@@ -44,21 +50,26 @@ class TrafficLight(Actor):
     Traffic implementation details for traffic lights
     """
 
-    def __init__(self, carla_actor, parent, communication):
+    def __init__(self, uid, name, parent, node, carla_actor):
         """
         Constructor
 
-        :param carla_actor: carla actor object
-        :type carla_actor: carla.TrafficLight
+        :param uid: unique identifier for this object
+        :type uid: int
+        :param name: name identiying this object
+        :type name: string
         :param parent: the parent of this
         :type parent: carla_ros_bridge.Parent
-        :param communication: communication-handle
-        :type communication: carla_ros_bridge.communication
+        :param node: node-handle
+        :type node: carla_ros_bridge.CarlaRosBridge
+        :param carla_actor: carla actor object
+        :type carla_actor: carla.TrafficLight
         """
-        super(TrafficLight, self).__init__(carla_actor=carla_actor,
+        super(TrafficLight, self).__init__(uid=uid,
+                                           name=name,
                                            parent=parent,
-                                           communication=communication,
-                                           prefix='traffic.traffic_light')
+                                           node=node,
+                                           carla_actor=carla_actor)
 
     def get_status(self):
         """
@@ -78,3 +89,17 @@ class TrafficLight(Actor):
         else:
             status.state = CarlaTrafficLightStatus.UNKNOWN
         return status
+
+    def get_info(self):
+        """
+        Get the info of the traffic light
+        """
+        info = CarlaTrafficLightInfo()
+        info.id = self.get_id()
+        info.transform = self.get_current_ros_pose()
+        info.trigger_volume.center = trans.carla_location_to_ros_point(
+            self.carla_actor.trigger_volume.location)
+        info.trigger_volume.size.x = self.carla_actor.trigger_volume.extent.x * 2.0
+        info.trigger_volume.size.y = self.carla_actor.trigger_volume.extent.y * 2.0
+        info.trigger_volume.size.z = self.carla_actor.trigger_volume.extent.z * 2.0
+        return info
