@@ -253,6 +253,7 @@ class CarlaAckermannControl(object):
         set target sterring angle
         """
         self.info.target.steering_angle = -target_steering_angle
+        print("Max steering angle: " + str(self.info.restrictions.max_steering_angle))
         if abs(self.info.target.steering_angle) > self.info.restrictions.max_steering_angle:
             rospy.logerr("Max steering angle reached, clipping value")
             self.info.target.steering_angle = numpy.clip(
@@ -300,6 +301,7 @@ class CarlaAckermannControl(object):
         self.run_speed_control_loop()
         self.run_accel_control_loop()
         if not self.info.output.hand_brake:
+            print("vehicle_control_cycle")
             self.update_drive_vehicle_control_command()
 
             # only send out the Carla Control Command if AckermannDrive messages are

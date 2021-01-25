@@ -44,5 +44,9 @@
   <include file="$(find carla_manual_control)/launch/carla_manual_control.launch">
     <arg name='role_name' value='$(arg role_name)'/>
   </include>
+<!-- -->
+  <include file="$(find carla_ackermann_control)/launch/carla_ackermann_control.launch">
+    <arg name='role_name' value='$(arg role_name)'/>
+  </include>
 
 </launch>
