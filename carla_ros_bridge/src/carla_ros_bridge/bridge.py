@@ -51,7 +51,7 @@ class CarlaRosBridge(object):
     Carla Ros bridge
     """
 
-    CARLA_VERSION = "0.9.10"
+    CARLA_VERSION = "0.9.11"
 
     def __init__(self, carla_world, params):
         """
@@ -80,7 +80,7 @@ class CarlaRosBridge(object):
             self.carla_settings.synchronous_mode = self.parameters["synchronous_mode"]
             rospy.loginfo("fixed_delta_seconds: {}".format(
                 self.parameters["fixed_delta_seconds"]))
-            self.carla_settings.fixed_delta_seconds = self.parameters["fixed_delta_seconds"]
+            self.carla_settings.fixed_delta_seconds = None#self.parameters["fixed_delta_seconds"]
             carla_world.apply_settings(self.carla_settings)
 
         # active sync mode in the ros bridge only if CARLA world is configured in sync mode and
