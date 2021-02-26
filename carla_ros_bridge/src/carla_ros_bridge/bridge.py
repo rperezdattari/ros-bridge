@@ -134,7 +134,6 @@ class CarlaRosBridge(object):
 
             self.actor_factory.start()
 
-
             # register callback to update actors
             self.on_tick_id = self.carla_world.on_tick(self._carla_time_tick)
 
@@ -317,15 +316,13 @@ class CarlaRosBridge(object):
             rospy.logdebug("Tick for frame {} returned. Waiting for sensor data...".format(
                 frame))
 
-
             start_time_sensors = time.time()
-
             with self.actor_factory.lock:
                 self._update(frame, world_snapshot.timestamp.elapsed_seconds)
-
             end_time = time.time()
-            duration = end_time - start_time_sensors
+            duration = end_time - start_time
             print('Sensor updates took ' + str(duration) + ' s')
+
             rospy.logdebug("Waiting for sensor data finished.")
             self.actor_factory.update()
 
@@ -380,202 +377,6 @@ class CarlaRosBridge(object):
                 self.actor_factory.lock.release()
 
 
-
-            # Put an update in the queue!
-            print('carla time tick, updating actors!')
-            # if possible push current snapshot to update-actors-thread
-            try:
-                self.update_actors_queue.put_nowait(
-                    set([x.id for x in carla_snapshot]))
-            except queue.Full:
-                pass
-
-    def _update_actors_thread(self):
-        """
-        execution loop for async mode actor list updates
-        """
-        print('asynchronous actor updating')
-        while not self.shutdown.is_set():
-            try:
-                current_actors = self.update_actors_queue.get(timeout=1)
-                if current_actors:
-                    self._update_actors(current_actors)
-                    self.update_actors_queue.task_done()
-            except queue.Empty:
-                pass
-
-    def _update_actors(self, current_actors):
-        """
-        update the available actors
-        """
-        previous_actors = set(self.actors)
-
-        new_actors = current_actors - previous_actors
-        deleted_actors = previous_actors - current_actors
-
-        if new_actors:
-            for carla_actor in self.carla_world.get_actors(list(new_actors)):
-                self._create_actor(carla_actor)
-
-        if deleted_actors:
-            for id_to_delete in deleted_actors:
-                # remove actor
-                actor = self.actors[id_to_delete]
-                with self.update_lock:
-                    rospy.loginfo("Remove {}(id={}, parent_id={}, prefix={})".format(
-                        actor.__class__.__name__, actor.get_id(),
-                        actor.get_parent_id(),
-                        actor.get_prefix()))
-                    actor.destroy()
-                    del self.actors[id_to_delete]
-
-                # remove pseudo-actors that have actor as parent
-                updated_pseudo_actors = []
-                for pseudo_actor in self.pseudo_actors:
-                    if pseudo_actor.get_parent_id() == id_to_delete:
-                        rospy.loginfo("Remove {}(parent_id={}, prefix={})".format(
-                            pseudo_actor.__class__.__name__,
-                            pseudo_actor.get_parent_id(),
-                            pseudo_actor.get_prefix()))
-                        pseudo_actor.destroy()
-                        del pseudo_actor
-                    else:
-                        updated_pseudo_actors.append(pseudo_actor)
-                self.pseudo_actors = updated_pseudo_actors
-
-        # publish actor list on change
-        if new_actors or deleted_actors:
-            self.publish_actor_list()
-
-    def publish_actor_list(self):
-        """
-        publish list of carla actors
-        :return:
-        """
-        ros_actor_list = CarlaActorList()
-
-        for actor_id in self.actors:
-            actor = self.actors[actor_id].carla_actor
-            ros_actor = CarlaActorInfo()
-            ros_actor.id = actor.id
-            ros_actor.type = actor.type_id
-            try:
-                ros_actor.rolename = str(actor.attributes.get('role_name'))
-            except ValueError:
-                pass
-
-            if actor.parent:
-                ros_actor.parent_id = actor.parent.id
-            else:
-                ros_actor.parent_id = 0
-
-            ros_actor_list.actors.append(ros_actor)
-
-        self.actor_list_publisher.publish(ros_actor_list)
-
-    def _create_actor(self, carla_actor):  # pylint: disable=too-many-branches,too-many-statements
-        """
-        create an actor
-        """
-        parent = None
-        if carla_actor.parent:
-            if carla_actor.parent.id in self.actors:
-                parent = self.actors[carla_actor.parent.id]
-            else:
-                parent = self._create_actor(carla_actor.parent)
-
-        actor = None
-        pseudo_actors = []
-        if carla_actor.type_id.startswith('traffic'):
-            if carla_actor.type_id == "traffic.traffic_light":
-                actor = TrafficLight(carla_actor, parent, node=self)
-            else:
-                actor = Traffic(carla_actor, parent, node=self)
-        elif carla_actor.type_id.startswith("vehicle"):
-            if carla_actor.attributes.get('role_name')\
-                    in self.parameters['ego_vehicle']['role_name']:
-                actor = EgoVehicle(
-                    carla_actor, parent, self, self._ego_vehicle_control_applied_callback)
-                pseudo_actors.append(ObjectSensor(parent=actor,
-                                                  node=self,
-                                                  actor_list=self.actors,
-                                                  filtered_id=carla_actor.id))
-            else:
-                actor = Vehicle(carla_actor, parent, self)
-        elif carla_actor.type_id.startswith("sensor"):
-            if carla_actor.type_id.startswith("sensor.camera"):
-                if carla_actor.type_id.startswith("sensor.camera.rgb"):
-                    actor = RgbCamera(
-                        carla_actor, parent, self, self.carla_settings.synchronous_mode)
-                elif carla_actor.type_id.startswith("sensor.camera.depth"):
-                    actor = DepthCamera(
-                        carla_actor, parent, self, self.carla_settings.synchronous_mode)
-                elif carla_actor.type_id.startswith("sensor.camera.semantic_segmentation"):
-                    actor = SemanticSegmentationCamera(
-                        carla_actor, parent, self, self.carla_settings.synchronous_mode)
-                elif carla_actor.type_id.startswith("sensor.camera.dvs"):
-                    actor = DVSCamera(carla_actor, parent, self,
-                                      self.carla_settings.synchronous_mode)
-                else:
-                    actor = Camera(
-                        carla_actor, parent, self, self.carla_settings.synchronous_mode)
-            elif carla_actor.type_id.startswith("sensor.lidar"):
-                if carla_actor.type_id.endswith("sensor.lidar.ray_cast"):
-                    actor = Lidar(carla_actor, parent, self,
-                                  self.carla_settings.synchronous_mode)
-                elif carla_actor.type_id.endswith("sensor.lidar.ray_cast_semantic"):
-                    actor = SemanticLidar(carla_actor, parent, self,
-                                          self.carla_settings.synchronous_mode)
-            elif carla_actor.type_id.startswith("sensor.lidar"):
-                actor = Lidar(carla_actor, parent, self,
-                              self.carla_settings.synchronous_mode)
-            elif carla_actor.type_id.startswith("sensor.other.radar"):
-                actor = Radar(carla_actor, parent, self,
-                              self.carla_settings.synchronous_mode)
-            elif carla_actor.type_id.startswith("sensor.other.gnss"):
-                actor = Gnss(carla_actor, parent, self,
-                             self.carla_settings.synchronous_mode)
-            elif carla_actor.type_id.startswith("sensor.other.imu"):
-                actor = ImuSensor(
-                    carla_actor, parent, self, self.carla_settings.synchronous_mode)
-            elif carla_actor.type_id.startswith("sensor.other.collision"):
-                actor = CollisionSensor(
-                    carla_actor, parent, self, self.carla_settings.synchronous_mode)
-            elif carla_actor.type_id.startswith("sensor.other.rss"):
-                actor = RssSensor(
-                    carla_actor, parent, self, self.carla_settings.synchronous_mode)
-            elif carla_actor.type_id.startswith("sensor.other.lane_invasion"):
-                actor = LaneInvasionSensor(
-                    carla_actor, parent, self, self.carla_settings.synchronous_mode)
-            else:
-                actor = Sensor(carla_actor, parent, self,
-                               self.carla_settings.synchronous_mode)
-        elif carla_actor.type_id.startswith("spectator"):
-            actor = Spectator(carla_actor, parent, self)
-        elif carla_actor.type_id.startswith("walker"):
-            actor = Walker(carla_actor, parent, self)
-        else:
-            actor = Actor(carla_actor, parent, self)
-
-        rospy.loginfo("Created {}(id={}, parent_id={},"
-                      " type={}, prefix={}, attributes={})".format(
-                          actor.__class__.__name__, actor.get_id(),
-                          actor.get_parent_id(), carla_actor.type_id,
-                          actor.get_prefix(), carla_actor.attributes))
-        with self.update_lock:
-            self.actors[carla_actor.id] = actor
-
-        for pseudo_actor in pseudo_actors:
-            rospy.loginfo("Created {}(parent_id={}, prefix={})".format(
-                pseudo_actor.__class__.__name__,
-                pseudo_actor.get_parent_id(),
-                pseudo_actor.get_prefix()))
-            with self.update_lock:
-                self.pseudo_actors.append(pseudo_actor)
-
-        return actor
->>>>>>> sped_up_branch
-
     def run(self):
         """
         Run the bridge functionality.
@@ -604,7 +405,6 @@ class CarlaRosBridge(object):
         """
         # update world info
         self.world_info.update(frame_id, timestamp)
-
 
         # update all carla actors
         for actor_id in self.actor_factory.actors:
