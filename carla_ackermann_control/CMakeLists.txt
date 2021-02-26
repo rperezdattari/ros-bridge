@@ -23,9 +23,7 @@ generate_messages(DEPENDENCIES std_msgs carla_msgs)
 
 generate_dynamic_reconfigure_options(config/EgoVehicleControlParameter.cfg)
 
-if(CATKIN_ENABLE_TESTING)
-  roslaunch_add_file_check(launch)
-endif()
+roslaunch_add_file_check(launch)
 
 catkin_package()
 

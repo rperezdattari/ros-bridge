@@ -1,10 +1,5 @@
 # ROS bridge for CARLA simulator
 
-[![Actions Status](https://github.com/carla-simulator/ros-bridge/workflows/CI/badge.svg)](https://github.com/carla-simulator/ros-bridge)
-[![Build Status](https://travis-ci.com/carla-simulator/ros-bridge.svg?branch=master)](https://travis-ci.com/carla-simulator/ros-bridge)
-[![GitHub](https://img.shields.io/github/license/carla-simulator/ros-bridge)](https://github.com/carla-simulator/ros-bridge/blob/master/LICENSE)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/carla-simulator/ros-bridge)](https://github.com/carla-simulator/ros-bridge/releases/latest)
-
 This ROS package aims at providing a simple ROS bridge for CARLA simulator.
 
 ![rviz setup](./docs/images/ad_demo.png "AD Demo")
@@ -24,8 +19,9 @@ Beside the bridging functionality, there are many more features provided in sepa
 
 | Name                              | Description                                                                                             |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| [Carla Spawn Actors](carla_spawn_objects/README.md) | Provides a generic way to spawn actors |
+| [Carla Ego Vehicle](carla_ego_vehicle/README.md) | Provides a generic way to spawn an ego vehicle and attach sensors to it. |
 | [Carla Manual Control](carla_manual_control/README.md) | A ROS-based visualization and control tool for an ego vehicle (similar to carla_manual_control.py provided by CARLA) |
+| [Carla Infrastructure](carla_infrastructure/README.md) | Provides a generic way to spawn a set of infrastructure sensors defined in a config file. |
 | [Carla Waypoint Publisher](carla_waypoint_publisher/README.md) | Provide routes and access to the Carla waypoint API |
 | [Carla ROS Scenario Runner](carla_ros_scenario_runner/README.md) | ROS node that wraps the functionality of the CARLA [scenario runner](https://github.com/carla-simulator/scenario_runner) to execute scenarios. |
 | [Carla Ackermann Control](carla_ackermann_control/README.md) | A controller to convert ackermann commands to steer/throttle/brake|
@@ -35,6 +31,7 @@ Beside the bridging functionality, there are many more features provided in sepa
 | [RQT Carla Plugin](rqt_carla_plugin/README.md) | A [RQT](http://wiki.ros.org/rqt) plugin to control CARLA. |
 
 For a quick overview, after following the [Setup section](#setup), please run the [CARLA AD Demo](carla_ad_demo/README.md). It provides a ready-to-use demonstrator of many of the features.
+
 
 ## Setup
 
@@ -154,137 +151,90 @@ A [CARLA Control rqt plugin](rqt_carla_control/README.md) is available to publis
 
 ## Available ROS Topics
 
-### Sensors
+### Ego Vehicle
 
-Sensor data is provided via topic with prefix `/carla/[<PARENTS ROLE NAME>]/<SENSOR ROLE NAME>/[<TOPIC NAME>]`
+#### Sensors
 
-The following sensors are available:
+The ego vehicle sensors are provided via topics with prefix /carla/ego_vehicle/&lt;sensor_topic>
 
-#### CARLA sensors
+Currently the following sensors are supported:
 
 ##### RGB camera
 
 | Topic                                                          | Type                                                                                   |
 | -------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>/image` | [sensor_msgs.Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html)           |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>/camera_info` | [sensor_msgs.CameraInfo](http://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html) |
+| `/carla/<ROLE NAME>/camera/rgb/<SENSOR ROLE NAME>/image_color` | [sensor_msgs.Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html)           |
+| `/carla/<ROLE NAME>/camera/rgb/<SENSOR ROLE NAME>/camera_info` | [sensor_msgs.CameraInfo](http://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html) |
 
 ##### Depth camera
 
 | Topic                                                          | Type                                                                                   |
 | -------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>/image` | [sensor_msgs.Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html)           |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>/camera_info` | [sensor_msgs.CameraInfo](http://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html) |
+| `/carla/<ROLE NAME>/camera/depth/<SENSOR ROLE NAME>/image_depth` | [sensor_msgs.Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html)           |
+| `/carla/<ROLE NAME>/camera/depth/<SENSOR ROLE NAME>/camera_info` | [sensor_msgs.CameraInfo](http://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html) |
 
 ##### Semantic segmentation camera
 
 | Topic                                                          | Type                                                                                   |
 | -------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>/image` | [sensor_msgs.Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html)           |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>/camera_info` | [sensor_msgs.CameraInfo](http://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html) |
+| `/carla/<ROLE NAME>/camera/semantic_segmentation/<SENSOR ROLE NAME>/image_segmentation` | [sensor_msgs.Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html)           |
+| `/carla/<ROLE NAME>/camera/semantic_segmentation/<SENSOR ROLE NAME>/camera_info` | [sensor_msgs.CameraInfo](http://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html) |
 
 ##### DVS camera
 
 | Topic                                                          | Type                                                                                   |
 | -------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>/events` | [sensor_msgs.PointCloud2](http://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html)           |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>/image` | [sensor_msgs.Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html)           |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>/camera_info` | [sensor_msgs.CameraInfo](http://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html) |
+| `/carla/<ROLE NAME>/camera/dvs/<SENSOR ROLE NAME>/events` | [sensor_msgs.PointCloud2](http://docs.ros.org/en/api/sensor_msgs/html/msg/PointCloud2.html)           |
+| `/carla/<ROLE NAME>/camera/dvs/<SENSOR ROLE NAME>/image_events` | [sensor_msgs.Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html)           |
+| `/carla/<ROLE NAME>/camera/dvs/<SENSOR ROLE NAME>/camera_info` | [sensor_msgs.CameraInfo](http://docs.ros.org/api/sensor_msgs/html/msg/CameraInfo.html) |
 
 ##### Lidar
 
 | Topic                                                     | Type                                                                                     |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>` | [sensor_msgs.PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) |
+| `/carla/<ROLE NAME>/lidar/<SENSOR ROLE NAME>/point_cloud` | [sensor_msgs.PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) |
 
 ##### Semantic lidar
 
 | Topic                                                     | Type                                                                                     |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>` | [sensor_msgs.PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) |
+| `/carla/<ROLE NAME>/semantic_lidar/<SENSOR ROLE NAME>/point_cloud` | [sensor_msgs.PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) |
 
 ##### Radar
 
 | Topic                                                          | Type                                                                                   |
 | -------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>` | [sensor_msgs.PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) |
+| `/carla/<ROLE NAME>/radar/<SENSOR ROLE NAME>/radar_points` | [sensor_msgs.PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) |
 
 ##### IMU
 
 | Topic                    | Type                                                                              |
 | ------------------------ | --------------------------------------------------------------------------------- |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>` | [sensor_msgs.Imu](https://docs.ros.org/api/sensor_msgs/html/msg/Imu.html) |
+| `/carla/<ROLE NAME>/imu` | [sensor_msgs.Imu](https://docs.ros.org/api/sensor_msgs/html/msg/Imu.html) |
 
 ##### GNSS
 
 | Topic                                            | Type                                                                                 | Description           |
 | ------------------------------------------------ | ------------------------------------------------------------------------------------ | --------------------- |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>` | [sensor_msgs.NavSatFix](http://docs.ros.org/api/sensor_msgs/html/msg/NavSatFix.html) | publish gnss location |
+| `/carla/<ROLE NAME>/gnss/<SENSOR ROLE NAME>/fix` | [sensor_msgs.NavSatFix](http://docs.ros.org/api/sensor_msgs/html/msg/NavSatFix.html) | publish gnss location |
 
 ##### Collision Sensor
 
 | Topic                          | Type                                                                     | Description              |
 | ------------------------------ | ------------------------------------------------------------------------ | ------------------------ |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>` | [carla_msgs.CarlaCollisionEvent](https://github.com/carla-simulator/ros-carla-msgs/tree/master/msg/CarlaCollisionEvent.msg) | publish collision events |
+| `/carla/<ROLE NAME>/collision` | [carla_msgs.CarlaCollisionEvent](https://github.com/carla-simulator/ros-carla-msgs/tree/master/msg/CarlaCollisionEvent.msg) | publish collision events |
 
 ##### Lane Invasion Sensor
 
 | Topic                              | Type                                                                           | Description                     |
 | ---------------------------------- | ------------------------------------------------------------------------------ | ------------------------------- |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>` | [carla_msgs.CarlaLaneInvasionEvent](https://github.com/carla-simulator/ros-carla-msgs/tree/master/msg/CarlaLaneInvasionEvent.msg) | publish events on lane-invasion |
+| `/carla/<ROLE NAME>/lane_invasion` | [carla_msgs.CarlaLaneInvasionEvent](https://github.com/carla-simulator/ros-carla-msgs/tree/master/msg/CarlaLaneInvasionEvent.msg) | publish events on lane-invasion |
 
-#### Pseudo sensors
-
-##### TF Sensor
-
-The tf data for the ego vehicle is published when this pseudo sensor is spawned.
-
-**Note**: Sensors publish the tf data when the measurement is done. The `child_frame_id` corresponds with the prefix of the sensor topics.
-
-##### Odometry Sensor
+#### Object Sensor
 
 | Topic                        | Type                                                                                                     | Description                                      |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `/carla/<PARENT ROLE NAME>/<SENSOR ROLE NAME>` | [nav_msgs.Odometry](http://docs.ros.org/en/api/nav_msgs/html/msg/Odometry.html) | odometry of the parent actor |
-
-##### Speedometer Sensor
-
-| Topic                        | Type                                                                                                     | Description                                      |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `/carla/<PARENT ROLE NAME>/<SENSOR ROLE NAME>` | [std_msgs.Float32](http://docs.ros.org/en/api/std_msgs/html/msg/Float32.html) | speed of the parent actor. Units: m/s |
-
-##### Map Sensor
-
-| Topic                        | Type                                                                                                     | Description                                      |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>` | [std_msgs.String](http://docs.ros.org/en/api/std_msgs/html/msg/String.html) | provides the OpenDRIVE map as a string on a latched topic. |
-
-##### Object Sensor
-
-| Topic                        | Type                                                                                                     | Description                                      |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>` | [derived_object_msgs.ObjectArray](http://docs.ros.org/api/derived_object_msgs/html/msg/ObjectArray.html) | publishes all vehicles and walker. If attached to a parent, the parent is not contained. |
-
-##### Marker Sensor
-
-| Topic                        | Type                                                                                                     | Description                                      |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>` | [visualization_msgs.Marker](http://docs.ros.org/api/visualization_msgs/html/msg/Marker.html) | visualization of vehicles and walkers |
-
-##### Traffic Lights Sensor
-
-| Topic                        | Type                                                                                                     | Description                                      |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>/status` | [carla_msgs.CarlaTrafficLightStatusList](https://github.com/carla-simulator/ros-carla-msgs/tree/master/msg/CarlaTrafficLightStatusList.msg)             | list of all traffic lights with their status |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>/info` | [carla_msgs.CarlaTrafficLightInfoList](https://github.com/carla-simulator/ros-carla-msgs/tree/master/msg/CarlaTrafficLightInfoList.msg)             | static information for all traffic lights (e.g. position)|
-
-##### Actor List Sensor
-
-| Topic                        | Type                                                                                                     | Description                                      |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `/carla/[<PARENT ROLE NAME>]/<SENSOR ROLE NAME>` | [carla_msgs.CarlaActorList](https://github.com/carla-simulator/ros-carla-msgs/tree/master/msg/CarlaActorList.msg) | list of all carla actors |
-
-### Ego Vehicle
+| `/carla/<ROLE NAME>/objects` | [derived_object_msgs.ObjectArray](http://docs.ros.org/api/derived_object_msgs/html/msg/ObjectArray.html) | all vehicles and walkers, except the ego vehicle |
 
 #### Control
 
@@ -338,10 +288,17 @@ In certain cases, the [Carla Control Command](https://github.com/carla-simulator
 Therefore a ROS-based node `carla_ackermann_control` is provided which reads [AckermannDrive](http://docs.ros.org/api/ackermann_msgs/html/msg/AckermannDrive.html) messages.
 You can find further documentation [here](carla_ackermann_control/README.md).
 
-### Other topics
+### Other Topics
+
+#### Object information of other actors
 
 | Topic               | Type                                                                                                     | Description                           |
 | ------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `/carla/objects`    | [derived_object_msgs.ObjectArray](http://docs.ros.org/api/derived_object_msgs/html/msg/ObjectArray.html) | all vehicles and walkers              |
+| `/carla/marker`     | [visualization_msgs.Marker](http://docs.ros.org/api/visualization_msgs/html/msg/Marker.html)             | visualization of vehicles and walkers |
+| `/carla/actor_list` | [carla_msgs.CarlaActorList](https://github.com/carla-simulator/ros-carla-msgs/tree/master/msg/CarlaActorList.msg)                                           | list of all carla actors              |
+| `/carla/traffic_lights` | [carla_msgs.CarlaTrafficLightStatusList](https://github.com/carla-simulator/ros-carla-msgs/tree/master/msg/CarlaTrafficLightStatusList.msg)             | list of all traffic lights with their status |
+| `/carla/traffic_lights_info` | [carla_msgs.CarlaTrafficLightInfoList](https://github.com/carla-simulator/ros-carla-msgs/tree/master/msg/CarlaTrafficLightInfoList.msg)             | static information for all traffic lights (e.g. position)|
 | `/carla/weather_control` | [carla_msgs.CarlaWeatherParameters](https://github.com/carla-simulator/ros-carla-msgs/tree/master/msg/CarlaWeatherParameters.msg)             | set the CARLA weather parameters|
 
 #### Status of CARLA
@@ -351,12 +308,31 @@ You can find further documentation [here](carla_ackermann_control/README.md).
 | `/carla/status`     | [carla_msgs.CarlaStatus](https://github.com/carla-simulator/ros-carla-msgs/tree/master/msg/CarlaStatus.msg)       |                                                        |
 | `/carla/world_info` | [carla_msgs.CarlaWorldInfo](https://github.com/carla-simulator/ros-carla-msgs/tree/master/msg/CarlaWorldInfo.msg) | Info about the CARLA world/level (e.g. OPEN Drive map) |
 
-#### Walker
+### Walker
 
 | Topic                                                | Type                                                                         | Description        |
 | ---------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------ |
-| `/carla/<ID>/walker_control_cmd` (subscriber) | [carla_msgs.CarlaWalkerControl](https://github.com/carla-simulator/ros-carla-msgs/tree/master/msg/CarlaWalkerControl.msg)       | Control a walker   |
+| `/carla/walker/<ID>/walker_control_cmd` (subscriber) | [carla_msgs.CarlaWalkerControl](https://github.com/carla-simulator/ros-carla-msgs/tree/master/msg/CarlaWalkerControl.msg)       | Control a walker   |
+| `/carla/walker/<ID>/odometry`                        | [nav_msgs.Odometry](http://docs.ros.org/api/nav_msgs/html/msg/Odometry.html) | odometry of walker |
 
+### Other Vehicles
+
+| Topic                          | Type                                                                         | Description         |
+| ------------------------------ | ---------------------------------------------------------------------------- | ------------------- |
+| `/carla/vehicle/<ID>/odometry` | [nav_msgs.Odometry](http://docs.ros.org/api/nav_msgs/html/msg/Odometry.html) | odometry of vehicle |
+
+### TF
+
+The tf data is published for all traffic participants and sensors.
+
+#### TF for traffic participants
+
+The `child_frame_id` corresponds with the CARLA actor id.
+If a role name is specified, an additional (static) transform with role name as child_frame_id is published.
+
+#### TF for sensors
+
+Sensors publish the transform, when the measurement is done. The `child_frame_id` corresponds with the prefix of the sensor topics.
 
 ### Debug Marker
 

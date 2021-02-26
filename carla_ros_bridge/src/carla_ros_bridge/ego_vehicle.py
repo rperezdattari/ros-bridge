@@ -16,7 +16,7 @@ import rospy
 
 from std_msgs.msg import ColorRGBA
 from std_msgs.msg import Bool
-from geometry_msgs.msg import Transform
+from geometry_msgs.msg import Twist, Transform
 
 from carla import VehicleControl
 from carla import Vector3D
@@ -34,26 +34,21 @@ class EgoVehicle(Vehicle):
     Vehicle implementation details for the ego vehicle
     """
 
-    def __init__(self, uid, name, parent, node, carla_actor, vehicle_control_applied_callback):
+    def __init__(self, carla_actor, parent, node, vehicle_control_applied_callback):
         """
         Constructor
 
-        :param uid: unique identifier for this object
-        :type uid: int
-        :param name: name identiying this object
-        :type name: string
+        :param carla_actor: carla actor object
+        :type carla_actor: carla.Actor
         :param parent: the parent of this
         :type parent: carla_ros_bridge.Parent
         :param node: node-handle
         :type node: carla_ros_bridge.CarlaRosBridge
-        :param carla_actor: carla actor object
-        :type carla_actor: carla.Actor
         """
-        super(EgoVehicle, self).__init__(uid=uid,
-                                         name=name,
+        super(EgoVehicle, self).__init__(carla_actor=carla_actor,
                                          parent=parent,
                                          node=node,
-                                         carla_actor=carla_actor)
+                                         prefix=carla_actor.attributes.get('role_name'))
 
         self.vehicle_info_published = False
         self.vehicle_control_override = False
@@ -86,6 +81,10 @@ class EgoVehicle(Vehicle):
         self.enable_autopilot_subscriber = rospy.Subscriber(
             self.get_topic_prefix() + "/enable_autopilot",
             Bool, self.enable_autopilot_updated)
+
+        self.twist_control_subscriber = rospy.Subscriber(
+            self.get_topic_prefix() + "/twist_cmd",
+            Twist, self.twist_command_updated)
 
     def get_marker_color(self):
         """
@@ -176,6 +175,10 @@ class EgoVehicle(Vehicle):
         """
         self.send_vehicle_msgs()
         super(EgoVehicle, self).update(frame, timestamp)
+        no_rotation = Transform()
+        no_rotation.rotation.w = 1.0
+        self.publish_transform(self.get_ros_transform(
+            no_rotation, frame_id=str(self.get_id()), child_frame_id=self.get_prefix()))
 
     def destroy(self):
         """
@@ -191,11 +194,35 @@ class EgoVehicle(Vehicle):
         self.control_subscriber = None
         self.enable_autopilot_subscriber.unregister()
         self.enable_autopilot_subscriber = None
+        self.twist_control_subscriber.unregister()
+        self.twist_control_subscriber = None
         self.control_override_subscriber.unregister()
         self.control_override_subscriber = None
         self.manual_control_subscriber.unregister()
         self.manual_control_subscriber = None
         super(EgoVehicle, self).destroy()
+
+    def twist_command_updated(self, twist):
+        """
+        Set angular/linear velocity (this does not respect vehicle dynamics)
+        """
+        if not self.vehicle_control_override:
+            angular_velocity = Vector3D()
+            angular_velocity.z = math.degrees(twist.angular.z)
+
+            rotation_matrix = transforms.carla_rotation_to_numpy_rotation_matrix(
+                self.carla_actor.get_transform().rotation)
+            linear_vector = numpy.array([twist.linear.x, twist.linear.y, twist.linear.z])
+            rotated_linear_vector = rotation_matrix.dot(linear_vector)
+            linear_velocity = Vector3D()
+            linear_velocity.x = rotated_linear_vector[0]
+            linear_velocity.y = -rotated_linear_vector[1]
+            linear_velocity.z = rotated_linear_vector[2]
+
+            rospy.logdebug("Set velocity linear: {}, angular: {}".format(
+                linear_velocity, angular_velocity))
+            self.carla_actor.set_target_velocity(linear_velocity)
+            self.carla_actor.set_target_angular_velocity(angular_velocity)
 
     def control_command_override(self, enable):
         """

@@ -23,27 +23,26 @@ class ObjectSensor(PseudoActor):
     Pseudo object sensor
     """
 
-    def __init__(self, uid, name, parent, node, actor_list):
+    def __init__(self, parent, node, actor_list, filtered_id):
         """
         Constructor
-
-        :param uid: unique identifier for this object
-        :type uid: int
-        :param name: name identiying this object
-        :type name: string
+        :param carla_world: carla world object
+        :type carla_world: carla.World
         :param parent: the parent of this
         :type parent: carla_ros_bridge.Parent
         :param node: node-handle
         :type node: carla_ros_bridge.CarlaRosBridge
         :param actor_list: current list of actors
         :type actor_list: map(carla-actor-id -> python-actor-object)
+        :param filtered_id: id to filter from actor_list
+        :type filtered_id: int
         """
 
-        super(ObjectSensor, self).__init__(uid=uid,
-                                           name=name,
-                                           parent=parent,
-                                           node=node)
+        super(ObjectSensor, self).__init__(parent=parent,
+                                           node=node,
+                                           prefix='objects')
         self.actor_list = actor_list
+        self.filtered_id = filtered_id
         self.object_publisher = rospy.Publisher(self.get_topic_prefix(),
                                                 ObjectArray,
                                                 queue_size=10)
@@ -56,14 +55,6 @@ class ObjectSensor(PseudoActor):
         self.actor_list = None
         super(ObjectSensor, self).destroy()
 
-    @staticmethod
-    def get_blueprint_name():
-        """
-        Get the blueprint identifier for the pseudo sensor
-        :return: name
-        """
-        return "sensor.pseudo.objects"
-
     def update(self, frame, timestamp):
         """
         Function (override) to update this object.
@@ -74,7 +65,7 @@ class ObjectSensor(PseudoActor):
         ros_objects = ObjectArray(header=self.get_msg_header("map"))
         for actor_id in self.actor_list.keys():
             # currently only Vehicles and Walkers are added to the object array
-            if self.parent is None or self.parent.uid != actor_id:
+            if self.filtered_id != actor_id:
                 actor = self.actor_list[actor_id]
                 if isinstance(actor, Vehicle):
                     ros_objects.objects.append(actor.get_object_info())

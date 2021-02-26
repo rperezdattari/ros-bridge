@@ -12,6 +12,8 @@ Base Classes to handle Actor objects
 
 import numpy as np
 from geometry_msgs.msg import TransformStamped
+from std_msgs.msg import ColorRGBA
+from visualization_msgs.msg import Marker
 
 from carla_ros_bridge.pseudo_actor import PseudoActor
 import carla_common.transforms as trans
@@ -23,26 +25,24 @@ class Actor(PseudoActor):
     Generic base class for all carla actors
     """
 
-    def __init__(self, uid, name, parent, node, carla_actor):
+    def __init__(self, carla_actor, parent, node, prefix=None):
         """
         Constructor
-
-        :param uid: unique identifier for this object
-        :type uid: int
-        :param name: name identiying this object
-        :type name: string
+        :param carla_actor: carla vehicle actor object
+        :type carla_actor: carla.Vehicle
         :param parent: the parent of this
         :type parent: carla_ros_bridge.Parent
         :param node: node-handle
         :type node: carla_ros_bridge.CarlaRosBridge
-        :param carla_actor: carla actor object
-        :type carla_actor: carla.Actor
+        :param prefix: the topic prefix to be used for this actor
+        :type prefix: string
         """
-        super(Actor, self).__init__(uid=uid,
-                                    name=name,
-                                    parent=parent,
-                                    node=node)
+        super(Actor, self).__init__(parent=parent, prefix=prefix, node=node)
         self.carla_actor = carla_actor
+
+        if carla_actor.id > np.iinfo(np.uint32).max:
+            raise ValueError("Actor ID exceeds maximum supported value '{}'".format(carla_actor.id))
+
         self.carla_actor_id = carla_actor.id
 
     def destroy(self):
@@ -135,3 +135,46 @@ class Actor(PseudoActor):
         :return:
         """
         self.node.publish_tf_message(ros_transform_msg)
+
+    def get_marker_color(self):  # pylint: disable=no-self-use
+        """
+        Function (override) to return the color for marker messages.
+
+        :return: the color used by a walkers marker
+        :rtpye : std_msgs.msg.ColorRGBA
+        """
+        color = ColorRGBA()
+        color.r = 0
+        color.g = 0
+        color.b = 255
+        return color
+
+    def get_marker(self):
+        """
+        Helper function to create a ROS visualization_msgs.msg.Marker for the actor
+
+        :return:
+        visualization_msgs.msg.Marker
+        """
+        marker = Marker(
+            header=self.get_msg_header(frame_id=str(self.get_id())))
+        marker.color = self.get_marker_color()
+        marker.color.a = 0.3
+        marker.id = self.get_id()
+        return marker
+
+    def publish_marker(self):
+        """
+        Function to send marker messages of this walker.
+
+        :return:
+        """
+        marker = self.get_marker()
+        marker.type = Marker.CUBE
+
+        marker.pose = trans.carla_location_to_pose(
+            self.carla_actor.bounding_box.location)
+        marker.scale.x = self.carla_actor.bounding_box.extent.x * 2.0
+        marker.scale.y = self.carla_actor.bounding_box.extent.y * 2.0
+        marker.scale.z = self.carla_actor.bounding_box.extent.z * 2.0
+        self.node.marker_publisher.publish(marker)

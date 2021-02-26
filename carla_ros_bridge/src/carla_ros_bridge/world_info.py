@@ -13,27 +13,34 @@ Class to handle the carla map
 import rospy
 
 from carla_msgs.msg import CarlaWorldInfo
+from carla_ros_bridge.pseudo_actor import PseudoActor
 
 
-class WorldInfo(object):
+class WorldInfo(PseudoActor):
 
     """
     Publish the map
     """
 
-    def __init__(self, carla_world):
+    def __init__(self, carla_world, node):
         """
         Constructor
 
         :param carla_world: carla world object
         :type carla_world: carla.World
+        :param node: node-handle
+        :type node: carla_ros_bridge.CarlaRosBridge
         """
+
+        super(WorldInfo, self).__init__(parent=None,
+                                        node=node,
+                                        prefix="world_info")
 
         self.carla_map = carla_world.get_map()
 
         self.map_published = False
 
-        self.world_info_publisher = rospy.Publisher("/carla/world_info",
+        self.world_info_publisher = rospy.Publisher(self.get_topic_prefix(),
                                                     CarlaWorldInfo,
                                                     queue_size=10,
                                                     latch=True)
@@ -49,6 +56,7 @@ class WorldInfo(object):
         """
         rospy.logdebug("Destroying WorldInfo()")
         self.carla_map = None
+        super(WorldInfo, self).destroy()
 
     def update(self, frame, timestamp):
         """

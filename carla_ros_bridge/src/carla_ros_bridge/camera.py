@@ -34,38 +34,32 @@ class Camera(Sensor):
     # global cv bridge to convert image between opencv and ros
     cv_bridge = CvBridge()
 
-    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode):  # pylint: disable=too-many-arguments
+    def __init__(self, carla_actor, parent, node, synchronous_mode, prefix=None):  # pylint: disable=too-many-arguments
         """
         Constructor
 
-        :param uid: unique identifier for this object
-        :type uid: int
-        :param name: name identiying this object
-        :type name: string
-        :param parent: the parent of this
-        :type parent: carla_ros_bridge.Parent
-        :param relative_spawn_pose: the relative spawn pose of this
-        :type relative_spawn_pose: geometry_msgs.Pose
-        :param node: node-handle
-        :type node: carla_ros_bridge.CarlaRosBridge
         :param carla_actor: carla actor object
         :type carla_actor: carla.Actor
-        :param synchronous_mode: use in synchronous mode?
-        :type synchronous_mode: bool
+        :param parent: the parent of this
+        :type parent: carla_ros_bridge.Parent
+        :param node: node-handle
+        :type node: carla_ros_bridge.CarlaRosBridge
+        :param prefix: the topic prefix to be used for this actor
+        :type prefix: string
         """
-        super(Camera, self).__init__(uid=uid,
-                                     name=name,
+        if not prefix:
+            prefix = 'camera'
+        super(Camera, self).__init__(carla_actor=carla_actor,
                                      parent=parent,
-                                     relative_spawn_pose=relative_spawn_pose,
                                      node=node,
-                                     carla_actor=carla_actor,
-                                     synchronous_mode=synchronous_mode)
+                                     synchronous_mode=synchronous_mode,
+                                     prefix=prefix)
 
         if self.__class__.__name__ == "Camera":
             rospy.logwarn("Created Unsupported Camera Actor"
-                          "(id={}, type={}, attributes={})".format(self.get_id(),
-                                                                   self.carla_actor.type_id,
-                                                                   self.carla_actor.attributes))
+                          "(id={}, parent_id={}, type={}, attributes={})".format(
+                              self.get_id(), self.get_parent_id(),
+                              self.carla_actor.type_id, self.carla_actor.attributes))
         else:
             self._build_camera_info()
 
@@ -74,7 +68,8 @@ class Camera(Sensor):
                                                      CameraInfo,
                                                      queue_size=10)
 
-        self.camera_image_publisher = rospy.Publisher(self.get_topic_prefix() + '/' + 'image',
+        self.camera_image_publisher = rospy.Publisher(self.get_topic_prefix() + '/' +
+                                                      self.get_image_topic_name(),
                                                       Image,
                                                       queue_size=10)
 
@@ -167,6 +162,17 @@ class Camera(Sensor):
         raise NotImplementedError(
             "This function has to be re-implemented by derived classes")
 
+    @abstractmethod
+    def get_image_topic_name(self):
+        """
+        Virtual function to provide the actual image topic name
+
+        :return image topic name
+        :rtype string
+        """
+        raise NotImplementedError(
+            "This function has to be re-implemented by derived classes")
+
 
 class RgbCamera(Camera):
 
@@ -174,32 +180,25 @@ class RgbCamera(Camera):
     Camera implementation details for rgb camera
     """
 
-    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode):
+    def __init__(self, carla_actor, parent, node, synchronous_mode):
         """
         Constructor
 
-        :param uid: unique identifier for this object
-        :type uid: int
-        :param name: name identiying this object
-        :type name: string
-        :param parent: the parent of this
-        :type parent: carla_ros_bridge.Parent
-        :param relative_spawn_pose: the relative spawn pose of this
-        :type relative_spawn_pose: geometry_msgs.Pose
-        :param node: node-handle
-        :type node: carla_ros_bridge.CarlaRosBridge
         :param carla_actor: carla actor object
         :type carla_actor: carla.Actor
+        :param parent: the parent of this
+        :type parent: carla_ros_bridge.Parent
+        :param node: node-handle
+        :type node: carla_ros_bridge.CarlaRosBridge
         :param synchronous_mode: use in synchronous mode?
         :type synchronous_mode: bool
         """
-        super(RgbCamera, self).__init__(uid=uid,
-                                        name=name,
+        super(RgbCamera, self).__init__(carla_actor=carla_actor,
                                         parent=parent,
-                                        relative_spawn_pose=relative_spawn_pose,
                                         node=node,
-                                        carla_actor=carla_actor,
-                                        synchronous_mode=synchronous_mode)
+                                        synchronous_mode=synchronous_mode,
+                                        prefix='camera/rgb/' +
+                                        carla_actor.attributes.get('role_name'))
 
         self.listen()
 
@@ -222,6 +221,15 @@ class RgbCamera(Camera):
 
         return carla_image_data_array, 'bgra8'
 
+    def get_image_topic_name(self):
+        """
+        virtual function to provide the actual image topic name
+
+        :return image topic name
+        :rtype string
+        """
+        return "image_color"
+
 
 class DepthCamera(Camera):
 
@@ -229,32 +237,25 @@ class DepthCamera(Camera):
     Camera implementation details for depth camera
     """
 
-    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode):
+    def __init__(self, carla_actor, parent, node, synchronous_mode):
         """
         Constructor
 
-        :param uid: unique identifier for this object
-        :type uid: int
-        :param name: name identiying this object
-        :type name: string
-        :param parent: the parent of this
-        :type parent: carla_ros_bridge.Parent
-        :param relative_spawn_pose: the relative spawn pose of this
-        :type relative_spawn_pose: geometry_msgs.Pose
-        :param node: node-handle
-        :type node: carla_ros_bridge.CarlaRosBridge
         :param carla_actor: carla actor object
         :type carla_actor: carla.Actor
+        :param parent: the parent of this
+        :type parent: carla_ros_bridge.Parent
+        :param node: node-handle
+        :type node: carla_ros_bridge.CarlaRosBridge
         :param synchronous_mode: use in synchronous mode?
         :type synchronous_mode: bool
         """
-        super(DepthCamera, self).__init__(uid=uid,
-                                          name=name,
+        super(DepthCamera, self).__init__(carla_actor=carla_actor,
                                           parent=parent,
-                                          relative_spawn_pose=relative_spawn_pose,
                                           node=node,
-                                          carla_actor=carla_actor,
-                                          synchronous_mode=synchronous_mode)
+                                          synchronous_mode=synchronous_mode,
+                                          prefix='camera/depth/' +
+                                          carla_actor.attributes.get('role_name'))
 
         self.listen()
 
@@ -299,6 +300,15 @@ class DepthCamera(Camera):
         # which is automatically selected by cv bridge with passthrough
         return depth_image, 'passthrough'
 
+    def get_image_topic_name(self):
+        """
+        Function (override) to provide the actual image topic name
+
+        :return image topic name
+        :rtype string
+        """
+        return "image_depth"
+
 
 class SemanticSegmentationCamera(Camera):
 
@@ -306,33 +316,26 @@ class SemanticSegmentationCamera(Camera):
     Camera implementation details for segmentation camera
     """
 
-    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode):
+    def __init__(self, carla_actor, parent, node, synchronous_mode):
         """
         Constructor
 
-        :param uid: unique identifier for this object
-        :type uid: int
-        :param name: name identiying this object
-        :type name: string
-        :param parent: the parent of this
-        :type parent: carla_ros_bridge.Parent
-        :param relative_spawn_pose: the relative spawn pose of this
-        :type relative_spawn_pose: geometry_msgs.Pose
-        :param node: node-handle
-        :type node: carla_ros_bridge.CarlaRosBridge
         :param carla_actor: carla actor object
         :type carla_actor: carla.Actor
+        :param parent: the parent of this
+        :type parent: carla_ros_bridge.Parent
+        :param node: node-handle
+        :type node: carla_ros_bridge.CarlaRosBridge
         :param synchronous_mode: use in synchronous mode?
         :type synchronous_mode: bool
         """
         super(
-            SemanticSegmentationCamera, self).__init__(uid=uid,
-                                                       name=name,
+            SemanticSegmentationCamera, self).__init__(carla_actor=carla_actor,
                                                        parent=parent,
-                                                       relative_spawn_pose=relative_spawn_pose,
                                                        node=node,
                                                        synchronous_mode=synchronous_mode,
-                                                       carla_actor=carla_actor)
+                                                       prefix='camera/semantic_segmentation/' +
+                                                       carla_actor.attributes.get('role_name'))
 
         self.listen()
 
@@ -356,6 +359,15 @@ class SemanticSegmentationCamera(Camera):
             dtype=numpy.uint8, buffer=carla_image.raw_data)
         return carla_image_data_array, 'bgra8'
 
+    def get_image_topic_name(self):
+        """
+        Function (override) to provide the actual image topic name
+
+        :return image topic name
+        :rtype string
+        """
+        return "image_segmentation"
+
 
 class DVSCamera(Camera):
 
@@ -363,32 +375,24 @@ class DVSCamera(Camera):
     Sensor implementation details for dvs cameras
     """
 
-    def __init__(self, uid, name, parent, relative_spawn_pose, node, carla_actor, synchronous_mode):  # pylint: disable=too-many-arguments
+    def __init__(self, carla_actor, parent, node, synchronous_mode, prefix=None):  # pylint: disable=too-many-arguments
         """
         Constructor
 
-        :param uid: unique identifier for this object
-        :type uid: int
-        :param name: name identiying this object
-        :type name: string
-        :param parent: the parent of this
-        :type parent: carla_ros_bridge.Parent
-        :param relative_spawn_pose: the relative spawn pose of this
-        :type relative_spawn_pose: geometry_msgs.Pose
-        :param node: node-handle
-        :type node: carla_ros_bridge.CarlaRosBridge
         :param carla_actor: carla actor object
         :type carla_actor: carla.Actor
-        :param synchronous_mode: use in synchronous mode?
-        :type synchronous_mode: bool
+        :param parent: the parent of this
+        :type parent: carla_ros_bridge.Parent
+        :param node: node-handle
+        :type node: carla_ros_bridge.CarlaRosBridge
+        :param prefix: the topic prefix to be used for this actor
+        :type prefix: string
         """
-        super(DVSCamera, self).__init__(uid=uid,
-                                        name=name,
+        super(DVSCamera, self).__init__(carla_actor=carla_actor,
                                         parent=parent,
-                                        relative_spawn_pose=relative_spawn_pose,
                                         node=node,
-                                        carla_actor=carla_actor,
-                                        synchronous_mode=synchronous_mode)
+                                        synchronous_mode=synchronous_mode,
+                                        prefix='camera/dvs/' + carla_actor.attributes.get('role_name'))
 
         self._dvs_events = None
         self.dvs_camera_publisher = rospy.Publisher(self.get_topic_prefix() +
@@ -447,3 +451,12 @@ class DVSCamera(Camera):
                                self._dvs_events[:]['pol'] * 2] = 255
 
         return carla_image_data_array, 'bgr8'
+
+    def get_image_topic_name(self):
+        """
+        Function (override) to provide the actual image topic name
+
+        :return image topic name
+        :rtype string
+        """
+        return "image_events"

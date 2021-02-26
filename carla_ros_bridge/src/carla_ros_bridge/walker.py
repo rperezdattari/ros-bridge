@@ -23,26 +23,28 @@ class Walker(TrafficParticipant):
     Actor implementation details for pedestrians
     """
 
-    def __init__(self, uid, name, parent, node, carla_actor):
+    def __init__(self, carla_actor, parent, node):
         """
         Constructor
 
-        :param uid: unique identifier for this object
-        :type uid: int
-        :param name: name identiying this object
-        :type name: string
+        :param carla_actor: carla walker actor object
+        :type carla_actor: carla.Walker
         :param parent: the parent of this
         :type parent: carla_ros_bridge.Parent
         :param node: node-handle
         :type node: carla_ros_bridge.CarlaRosBridge
-        :param carla_actor: carla walker actor object
-        :type carla_actor: carla.Walker
+        :param prefix: the topic prefix to be used for this actor
+        :type prefix: string
         """
-        super(Walker, self).__init__(uid=uid,
-                                     name=name,
+        if carla_actor.attributes.get('role_name'):
+            prefix = carla_actor.attributes.get('role_name')
+        else:
+            prefix = "walker/{:03}".format(carla_actor.id)
+
+        super(Walker, self).__init__(carla_actor=carla_actor,
                                      parent=parent,
                                      node=node,
-                                     carla_actor=carla_actor)
+                                     prefix=prefix)
 
         self.control_subscriber = rospy.Subscriber(
             self.get_topic_prefix() + "/walker_control_cmd",

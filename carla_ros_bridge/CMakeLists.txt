@@ -9,10 +9,8 @@ catkin_python_setup()
 
 catkin_package()
 
-if(CATKIN_ENABLE_TESTING)
-  roslaunch_add_file_check(launch)
-  roslaunch_add_file_check(test)
-endif()
+roslaunch_add_file_check(launch)
+roslaunch_add_file_check(test)
 
 include_directories(${catkin_INCLUDE_DIRS})
 

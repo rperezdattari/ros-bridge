@@ -20,8 +20,6 @@ except ImportError:
 
 
 import rospy
-import tf2_ros
-from geometry_msgs.msg import TransformStamped
 
 from carla_ros_bridge.actor import Actor
 import carla_common.transforms as trans
@@ -34,12 +32,9 @@ class Sensor(Actor):
     """
 
     def __init__(self,  # pylint: disable=too-many-arguments
-                 uid,
-                 name,
-                 parent,
-                 relative_spawn_pose,
-                 node,
                  carla_actor,
+                 parent,
+                 node,
                  synchronous_mode,
                  is_event_sensor=False,  # only relevant in synchronous_mode:
                  # if a sensor only delivers data on special events,
@@ -49,30 +44,24 @@ class Sensor(Actor):
         """
         Constructor
 
-        :param uid: unique identifier for this object
-        :type uid: int
-        :param name: name identiying this object
-        :type name: string
-        :param parent: the parent of this
-        :type parent: carla_ros_bridge.Parent
-        :param relative_spawn_pose: the relative spawn pose of this
-        :type relative_spawn_pose: geometry_msgs.Pose
-        :param node: node-handle
-        :type node: carla_ros_bridge.CarlaRosBridge
         :param carla_actor: carla actor object
         :type carla_actor: carla.Actor
+        :param parent: the parent of this
+        :type parent: carla_ros_bridge.Parent
+        :param node: node-handle
+        :type node: carla_ros_bridge.CarlaRosBridge
         :param synchronous_mode: use in synchronous mode?
         :type synchronous_mode: bool
         :param prefix: the topic prefix to be used for this actor
         :type prefix: string
         """
-        super(Sensor, self).__init__(uid=uid,
-                                     name=name,
+        if prefix is None:
+            prefix = 'sensor'
+        super(Sensor, self).__init__(carla_actor=carla_actor,
                                      parent=parent,
                                      node=node,
-                                     carla_actor=carla_actor)
+                                     prefix=prefix)
 
-        self.relative_spawn_pose = relative_spawn_pose
         self.synchronous_mode = synchronous_mode
         self.queue = queue.Queue()
         self.next_data_expected_time = None
@@ -83,38 +72,6 @@ class Sensor(Actor):
             rospy.logdebug("Sensor tick time is {}".format(self.sensor_tick_time))
         except (KeyError, ValueError):
             self.sensor_tick_time = None
-
-        self._tf_broadcaster = tf2_ros.TransformBroadcaster()
-
-    def publish_tf(self, pose=None):
-        if self.synchronous_mode:
-            pose = self.relative_spawn_pose
-            child_frame_id = self.get_prefix()
-            if self.parent is not None:
-                frame_id = self.parent.get_prefix()
-            else:
-                frame_id = "map"
-
-        else:
-            child_frame_id = self.get_prefix()
-            frame_id = "map"
-
-        if pose is not None:
-            transform = TransformStamped()
-            transform.header.stamp = rospy.Time.now()
-            transform.header.frame_id = frame_id
-            transform.child_frame_id = child_frame_id
-
-            transform.transform.translation.x = pose.position.x
-            transform.transform.translation.y = pose.position.y
-            transform.transform.translation.z = pose.position.z
-
-            transform.transform.rotation.x = pose.orientation.x
-            transform.transform.rotation.y = pose.orientation.y
-            transform.transform.rotation.z = pose.orientation.z
-            transform.transform.rotation.w = pose.orientation.w
-
-            self._tf_broadcaster.sendTransform(transform)
 
     def listen(self):
         print(type(self.carla_actor))
@@ -152,7 +109,8 @@ class Sensor(Actor):
                 self.queue.put(carla_sensor_data)
 
             else:
-                self.publish_tf(trans.carla_transform_to_ros_pose(carla_sensor_data.transform))
+                self.publish_transform(self.get_ros_transform(
+                    trans.carla_transform_to_ros_transform(carla_sensor_data.transform)))
                 self.sensor_data_updated(carla_sensor_data)
 
     @abstractmethod
@@ -180,7 +138,9 @@ class Sensor(Actor):
                                       frame))
                 rospy.logdebug("{}({}): process {}".format(
                     self.__class__.__name__, self.get_id(), frame))
-                self.publish_tf(trans.carla_transform_to_ros_pose(carla_sensor_data.transform))
+                self.publish_transform(
+                    self.get_ros_transform(
+                        trans.carla_transform_to_ros_transform(carla_sensor_data.transform)))
                 self.sensor_data_updated(carla_sensor_data)
             except queue.Empty:
                 return
@@ -207,10 +167,23 @@ class Sensor(Actor):
                         rospy.logdebug("{}({}): process {}".format(
                             self.__class__.__name__, self.get_id(), frame))
 
-                        self.publish_tf(trans.carla_transform_to_ros_pose(
-                            carla_sensor_data.transform))
-                        self.sensor_data_updated(carla_sensor_data)
+                        # end_time = time.time()
+                        # duration = end_time - start_time
+                        # rospy.loginfo("Updating 2 took: {} s".format(duration))
 
+                        self.publish_transform(
+                            self.get_ros_transform(
+                                trans.carla_transform_to_ros_transform(
+                                    carla_sensor_data.transform)))
+
+                        # end_time = time.time()
+                        # duration = end_time - start_time
+                        # rospy.loginfo("Updating 3 took: {} s".format(duration))
+
+                        self.sensor_data_updated(carla_sensor_data)  # here 2.3 ms
+                        # end_time = time.time()
+                        # duration = end_time - start_time
+                        # rospy.loginfo("Updating 4 took: {} s".format(duration))
                         return
                     elif carla_sensor_data.frame < frame:
                         rospy.logwarn("{}({}): skipping old frame {}, expected {}".format(
