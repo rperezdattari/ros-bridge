@@ -8,6 +8,10 @@
 """
 Classes to handle Carla sensors
 """
+# Oscar:
+import time
+import threading
+
 from abc import abstractmethod
 try:
     import queue
@@ -113,6 +117,7 @@ class Sensor(Actor):
             self._tf_broadcaster.sendTransform(transform)
 
     def listen(self):
+        print(type(self.carla_actor))
         self.carla_actor.listen(self._callback_sensor_data)
 
     def destroy(self):
@@ -136,12 +141,16 @@ class Sensor(Actor):
         :param carla_sensor_data: carla sensor data object
         :type carla_sensor_data: carla.SensorData
         """
+        print('Callback!')
+        # This is fast
         if not rospy.is_shutdown():
             if self.synchronous_mode:
                 if self.sensor_tick_time:
                     self.next_data_expected_time = carla_sensor_data.timestamp + \
                         float(self.sensor_tick_time)
+
                 self.queue.put(carla_sensor_data)
+
             else:
                 self.publish_tf(trans.carla_transform_to_ros_pose(carla_sensor_data.transform))
                 self.sensor_data_updated(carla_sensor_data)
@@ -177,19 +186,31 @@ class Sensor(Actor):
                 return
 
     def _update_synchronous_sensor(self, frame, timestamp):
+
+        # This is extremely shite
         while not self.next_data_expected_time or\
             (not self.queue.empty() or
              self.next_data_expected_time and
              self.next_data_expected_time < timestamp):
+
+            start_time = time.time()
+
             while True:
                 try:
-                    carla_sensor_data = self.queue.get(timeout=1.0)
+
+                    carla_sensor_data = self.queue.get_nowait() # This takes the time! (~0.16 s)
+                    end_time = time.time()
+                    duration = end_time - start_time
+                    rospy.loginfo("Updating 1 took: {} s".format(duration))
+
                     if carla_sensor_data.frame == frame:
                         rospy.logdebug("{}({}): process {}".format(
                             self.__class__.__name__, self.get_id(), frame))
+
                         self.publish_tf(trans.carla_transform_to_ros_pose(
                             carla_sensor_data.transform))
                         self.sensor_data_updated(carla_sensor_data)
+
                         return
                     elif carla_sensor_data.frame < frame:
                         rospy.logwarn("{}({}): skipping old frame {}, expected {}".format(
@@ -197,11 +218,14 @@ class Sensor(Actor):
                             self.get_id(),
                             carla_sensor_data.frame,
                             frame))
+
                 except queue.Empty:
                     if not rospy.is_shutdown():
-                        rospy.logwarn("{}({}): Expected Frame {} not received".format(
-                            self.__class__.__name__, self.get_id(), frame))
-                    return
+                        # rospy.logwarn("{}({}): Expected Frame {} not received".format(
+                        #     self.__class__.__name__, self.get_id(), frame))
+                        event = threading.Event()
+                        event.wait(0.005)
+                    # return
 
     def update(self, frame, timestamp):
         if self.synchronous_mode:
