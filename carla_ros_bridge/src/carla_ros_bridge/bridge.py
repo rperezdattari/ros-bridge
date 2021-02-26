@@ -15,6 +15,10 @@ try:
 except ImportError:
     import Queue as queue
 
+# Oscar
+import time
+import threading
+
 import sys
 from distutils.version import LooseVersion
 from threading import Thread, Lock, Event
@@ -118,6 +122,7 @@ class CarlaRosBridge(object):
         self._expected_ego_vehicle_control_command_ids_lock = Lock()
 
         if self.carla_settings.synchronous_mode:
+
             self.carla_run_state = CarlaControl.PLAY
 
             self.carla_control_subscriber = \
@@ -130,7 +135,7 @@ class CarlaRosBridge(object):
         else:
             self.timestamp_last_run = 0.0
 
-            self.update_actors_queue = queue.Queue(maxsize=1)
+            self.update_actors_queue = queue.Queue(maxsize=1) # Why 1?
 
             # start thread to update actors
             self.update_actor_thread = Thread(
@@ -238,7 +243,12 @@ class CarlaRosBridge(object):
         """
         execution loop for synchronous mode
         """
+
         while not self.shutdown.is_set():
+
+            # Oscar: set start time
+            start_time = time.time()
+
             self.process_run_state()
 
             if self.parameters['synchronous_mode_wait_for_vehicle_control_command']:
@@ -255,9 +265,14 @@ class CarlaRosBridge(object):
 
             self.status_publisher.set_frame(frame)
             self.update_clock(world_snapshot.timestamp)
+
             rospy.logdebug("Tick for frame {} returned. Waiting for sensor data...".format(
                 frame))
+            start_time_sensors = time.time()
             self._update(frame, world_snapshot.timestamp.elapsed_seconds)
+            end_time = time.time()
+            duration = end_time - start_time
+            print('Sensor updates took ' + str(duration) + ' s')
             rospy.logdebug("Waiting for sensor data finished.")
             self._update_actors(set([x.id for x in world_snapshot]))
 
@@ -269,6 +284,20 @@ class CarlaRosBridge(object):
                                       "Missing command from actor ids {}".format(
                                           self._expected_ego_vehicle_control_command_ids))
                     self._all_vehicle_control_commands_received.clear()
+
+            # Oscar: Get the duration of the loop
+            end_time = time.time()
+            duration = end_time - start_time
+
+            # Oscar: Get a pointer to the current thread
+            event = threading.Event()
+
+            # Oscar: If our execution is fast enough, wait for real-time to catch up
+            if duration < self.carla_settings.fixed_delta_seconds:
+                # print('Waiting ' + str(self.carla_settings.fixed_delta_seconds - duration) + ' s')
+                event.wait(self.carla_settings.fixed_delta_seconds - duration)
+            else:
+                rospy.logwarn('Warning: Carla ROS Bridge is currently too slow to run in real-time!')
 
     def _carla_time_tick(self, carla_snapshot):
         """
@@ -284,8 +313,10 @@ class CarlaRosBridge(object):
         :type carla_timestamp: carla.Timestamp
         :return:
         """
+        print('carla time tick')
         if not self.shutdown.is_set():
             if self.update_lock.acquire(False):
+
                 if self.timestamp_last_run < carla_snapshot.timestamp.elapsed_seconds:
                     self.timestamp_last_run = carla_snapshot.timestamp.elapsed_seconds
                     self.update_clock(carla_snapshot.timestamp)
@@ -294,6 +325,9 @@ class CarlaRosBridge(object):
                                  carla_snapshot.timestamp.elapsed_seconds)
                 self.update_lock.release()
 
+
+            # Put an update in the queue!
+            print('carla time tick, updating actors!')
             # if possible push current snapshot to update-actors-thread
             try:
                 self.update_actors_queue.put_nowait(
@@ -305,6 +339,7 @@ class CarlaRosBridge(object):
         """
         execution loop for async mode actor list updates
         """
+        print('asynchronous actor updating')
         while not self.shutdown.is_set():
             try:
                 current_actors = self.update_actors_queue.get(timeout=1)
@@ -511,6 +546,7 @@ class CarlaRosBridge(object):
         update all actors
         :return:
         """
+
         # update all pseudo actors
         for actor in self.pseudo_actors:
             actor.update(frame_id, timestamp)

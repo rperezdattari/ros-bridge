@@ -32,4 +32,6 @@
     <param name="role_name" value="$(arg role_name)" />
     <param name="spawn_ego_vehicle" value="$(arg spawn_ego_vehicle)" />
   </node>
+  <include file="$(find carla_ackermann_control)/launch/carla_ackermann_control.launch"/>
+
 </launch>

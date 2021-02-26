@@ -303,9 +303,10 @@ class CarlaAckermannControl(object):
             self.update_drive_vehicle_control_command()
 
             # only send out the Carla Control Command if AckermannDrive messages are
-            # received in the last second (e.g. to allows manually controlling the vehicle)
+            # received in the last second (e.g. to allows manually controlling the vehicle) #Oscar: Interesting
             if (self.lastAckermannMsgReceived + datetime.timedelta(0, 1)) > \
                     datetime.datetime.now():
+                # print('Carla control message published')
                 self.carla_control_publisher.publish(self.info.output)
 
     def control_steering(self):
@@ -339,17 +340,17 @@ class CarlaAckermannControl(object):
                     rospy.loginfo(
                         "VehicleControl: Change of driving direction to forward")
                     self.info.output.reverse = False
-            if self.info.target.speed_abs < full_stop_epsilon:
-                self.info.status.status = "full stop"
-                self.info.status.speed_control_accel_target = 0.
-                self.info.status.accel_control_pedal_target = 0.
-                self.set_target_speed(0.)
-                self.info.current.speed = 0.
-                self.info.current.speed_abs = 0.
-                self.info.current.accel = 0.
-                self.info.output.hand_brake = True
-                self.info.output.brake = 1.0
-                self.info.output.throttle = 0.0
+            # if self.info.target.speed_abs < full_stop_epsilon:
+            #     self.info.status.status = "full stop"
+            #     self.info.status.speed_control_accel_target = 0.
+            #     self.info.status.accel_control_pedal_target = 0.
+            #     self.set_target_speed(0.)
+            #     self.info.current.speed = 0.
+            #     self.info.current.speed_abs = 0.
+            #     self.info.current.accel = 0.
+            #     self.info.output.hand_brake = True
+            #     self.info.output.brake = 1.0
+            #     self.info.output.throttle = 0.0
 
         elif numpy.sign(self.info.current.speed) * numpy.sign(self.info.target.speed) == -1:
             # requrest for change of driving direction
@@ -359,7 +360,7 @@ class CarlaAckermannControl(object):
                           " v_current={} v_desired={}"
                           " Set desired speed to 0".format(self.info.current.speed,
                                                            self.info.target.speed))
-            self.set_target_speed(0.)
+            # self.set_target_speed(0.)
 
     def run_speed_control_loop(self):
         """
@@ -391,25 +392,26 @@ class CarlaAckermannControl(object):
         # set the auto_mode of the controller accordingly
         self.speed_controller.auto_mode = self.info.status.speed_control_activation_count >= 5
 
-        if self.speed_controller.auto_mode:
-            self.speed_controller.setpoint = self.info.target.speed_abs
-            self.info.status.speed_control_accel_delta = self.speed_controller(
-                self.info.current.speed_abs)
-
-            # clipping borders
-            clipping_lower_border = -target_accel_abs
-            clipping_upper_border = target_accel_abs
-            # per definition of ackermann drive: if zero, then use max value
-            if target_accel_abs < epsilon:
-                clipping_lower_border = -self.info.restrictions.max_decel
-                clipping_upper_border = self.info.restrictions.max_accel
-            self.info.status.speed_control_accel_target = numpy.clip(
-                self.info.status.speed_control_accel_target +
-                self.info.status.speed_control_accel_delta,
-                clipping_lower_border, clipping_upper_border)
-        else:
-            self.info.status.speed_control_accel_delta = 0.
-            self.info.status.speed_control_accel_target = self.info.target.accel
+        # So if the target acceleration was large enough for 5 time steps we move to speed control
+        # if self.speed_controller.auto_mode:
+        #     self.speed_controller.setpoint = self.info.target.speed_abs
+        #     self.info.status.speed_control_accel_delta = self.speed_controller(
+        #         self.info.current.speed_abs)
+        #
+        #     # clipping borders
+        #     clipping_lower_border = -target_accel_abs
+        #     clipping_upper_border = target_accel_abs
+        #     # per definition of ackermann drive: if zero, then use max value
+        #     if target_accel_abs < epsilon:
+        #         clipping_lower_border = -self.info.restrictions.max_decel
+        #         clipping_upper_border = self.info.restrictions.max_accel
+        #     self.info.status.speed_control_accel_target = numpy.clip(
+        #         self.info.status.speed_control_accel_target +
+        #         self.info.status.speed_control_accel_delta,
+        #         clipping_lower_border, clipping_upper_border)
+        # else:
+        self.info.status.speed_control_accel_delta = 0.
+        self.info.status.speed_control_accel_target = self.info.target.accel
 
     def run_accel_control_loop(self):
         """
@@ -422,6 +424,7 @@ class CarlaAckermannControl(object):
         # @todo: we might want to scale by making use of the the abs-jerk value
         # If the jerk input is big, then the trajectory input expects already quick changes
         # in the acceleration; to respect this we put an additional proportional factor on top
+        # print(self.info.status.accel_control_pedal_target)
         self.info.status.accel_control_pedal_target = numpy.clip(
             self.info.status.accel_control_pedal_target +
             self.info.status.accel_control_pedal_delta,
@@ -456,12 +459,17 @@ class CarlaAckermannControl(object):
                 (self.info.status.accel_control_pedal_target -
                  self.info.status.throttle_lower_border) /
                 abs(self.info.restrictions.max_pedal))
+            # print('Accelerating')
+            # print(self.info.output.throttle)
+
         elif self.info.status.accel_control_pedal_target > self.info.status.brake_upper_border:
             self.info.status.status = "coasting"
             # no control required
             self.info.output.brake = 0.0
             self.info.output.throttle = 0.0
         else:
+            # print('braking')
+
             self.info.status.status = "braking"
             # braking required
             self.info.output.brake = (
@@ -469,6 +477,13 @@ class CarlaAckermannControl(object):
                  self.info.status.accel_control_pedal_target) /
                 abs(self.info.restrictions.max_pedal))
             self.info.output.throttle = 0.0
+
+        self.info.output.throttle = (
+                (self.info.status.accel_control_pedal_target -
+                 self.info.status.throttle_lower_border) /
+                abs(self.info.restrictions.max_pedal))
+
+        # self.input.output.throttle = numpy.clip(self.info.target.accel, -8.0, 3.0)
 
         # finally clip the final control output (should actually never happen)
         self.info.output.brake = numpy.clip(
