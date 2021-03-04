@@ -33,6 +33,8 @@ class CarlaWalkerAgent(object):
         self._current_pose = Pose()
         rospy.on_shutdown(self.on_shutdown)
 
+        print('role name = {}'.format(role_name))
+
         # wait for ros bridge to create relevant topics
         try:
             rospy.wait_for_message(
@@ -71,7 +73,7 @@ class CarlaWalkerAgent(object):
         """
         callback on new route
         """
-        rospy.loginfo("New plan with {} waypoints received. Assigning plan...".format(
+        rospy.logwarn("New plan with {} waypoints received. Assigning plan...".format(
             len(path.poses)))
         self.control_publisher.publish(CarlaWalkerControl())  # stop
         self._waypoints = []
@@ -94,8 +96,10 @@ class CarlaWalkerAgent(object):
         r = rospy.Rate(20)
         while not rospy.is_shutdown():
             if self._waypoints:
-                control = CarlaWalkerControl()
+                control = CarlaWalkerControl()  # The control ros message
                 direction = Vector3()
+
+                # dX
                 direction.x = self._waypoints[0].position.x - self._current_pose.position.x
                 direction.y = self._waypoints[0].position.y - self._current_pose.position.y
                 direction_norm = math.sqrt(direction.x**2 + direction.y**2)

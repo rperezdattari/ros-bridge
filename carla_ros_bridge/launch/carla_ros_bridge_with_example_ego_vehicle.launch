@@ -15,6 +15,7 @@
 
   <!-- Synchronous mode-->
   <arg name='synchronous_mode' default=''/>
+  <arg name='realtime' default=''/>
   <arg name='synchronous_mode_wait_for_vehicle_control_command' default=''/>
   <arg name='fixed_delta_seconds' default=''/>
 
@@ -27,6 +28,7 @@
     <arg name='synchronous_mode' value='$(arg synchronous_mode)'/>
     <arg name='synchronous_mode_wait_for_vehicle_control_command' value='$(arg synchronous_mode_wait_for_vehicle_control_command)'/>
     <arg name='fixed_delta_seconds' value='$(arg fixed_delta_seconds)'/>
+    <arg name="realtime" value='$(arg realtime)'/>
   </include>
 
   <include file="$(find carla_ego_vehicle)/launch/carla_example_ego_vehicle.launch">

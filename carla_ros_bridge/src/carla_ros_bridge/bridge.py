@@ -90,6 +90,8 @@ class CarlaRosBridge(object):
         rospy.loginfo("synchronous_mode: {}".format(
             self.parameters["synchronous_mode"]))
         self.carla_settings.synchronous_mode = self.parameters["synchronous_mode"]
+        self.carla_settings.realtime = self.parameters["realtime"]  # Added (Oscar)
+
         rospy.loginfo("fixed_delta_seconds: {}".format(
             self.parameters["fixed_delta_seconds"]))
         self.carla_settings.fixed_delta_seconds = self.parameters["fixed_delta_seconds"]
@@ -272,7 +274,7 @@ class CarlaRosBridge(object):
             self._update(frame, world_snapshot.timestamp.elapsed_seconds)
             end_time = time.time()
             duration = end_time - start_time
-            print('Sensor updates took ' + str(duration) + ' s')
+            # print('Sensor updates took ' + str(duration) + ' s')
             rospy.logdebug("Waiting for sensor data finished.")
             self._update_actors(set([x.id for x in world_snapshot]))
 
@@ -285,19 +287,20 @@ class CarlaRosBridge(object):
                                           self._expected_ego_vehicle_control_command_ids))
                     self._all_vehicle_control_commands_received.clear()
 
-            # Oscar: Get the duration of the loop
-            end_time = time.time()
-            duration = end_time - start_time
+            if self.carla_settings.realtime:
+                # Oscar: Get the duration of the loop
+                end_time = time.time()
+                duration = end_time - start_time
 
-            # Oscar: Get a pointer to the current thread
-            event = threading.Event()
+                # Oscar: Get a pointer to the current thread
+                event = threading.Event()
 
-            # Oscar: If our execution is fast enough, wait for real-time to catch up
-            if duration < self.carla_settings.fixed_delta_seconds:
-                # print('Waiting ' + str(self.carla_settings.fixed_delta_seconds - duration) + ' s')
-                event.wait(self.carla_settings.fixed_delta_seconds - duration)
-            else:
-                rospy.logwarn('Warning: Carla ROS Bridge is currently too slow to run in real-time!')
+                # Oscar: If our execution is fast enough, wait for real-time to catch up
+                if duration < self.carla_settings.fixed_delta_seconds:
+                    # print('Waiting ' + str(self.carla_settings.fixed_delta_seconds - duration) + ' s')
+                    event.wait(self.carla_settings.fixed_delta_seconds - duration)
+                else:
+                    rospy.logwarn('Warning: Carla ROS Bridge is currently too slow to run in real-time!')
 
     def _carla_time_tick(self, carla_snapshot):
         """
@@ -313,7 +316,7 @@ class CarlaRosBridge(object):
         :type carla_timestamp: carla.Timestamp
         :return:
         """
-        print('carla time tick')
+        # print('carla time tick')
         if not self.shutdown.is_set():
             if self.update_lock.acquire(False):
 
@@ -327,7 +330,7 @@ class CarlaRosBridge(object):
 
 
             # Put an update in the queue!
-            print('carla time tick, updating actors!')
+            # print('carla time tick, updating actors!')
             # if possible push current snapshot to update-actors-thread
             try:
                 self.update_actors_queue.put_nowait(
@@ -339,7 +342,7 @@ class CarlaRosBridge(object):
         """
         execution loop for async mode actor list updates
         """
-        print('asynchronous actor updating')
+        # print('asynchronous actor updating')
         while not self.shutdown.is_set():
             try:
                 current_actors = self.update_actors_queue.get(timeout=1)

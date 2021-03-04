@@ -74,7 +74,6 @@ class Sensor(Actor):
             self.sensor_tick_time = None
 
     def listen(self):
-        print(type(self.carla_actor))
         self.carla_actor.listen(self._callback_sensor_data)
 
     def destroy(self):
@@ -98,7 +97,6 @@ class Sensor(Actor):
         :param carla_sensor_data: carla sensor data object
         :type carla_sensor_data: carla.SensorData
         """
-        print('Callback!')
         # This is fast
         if not rospy.is_shutdown():
             if self.synchronous_mode:
@@ -153,15 +151,15 @@ class Sensor(Actor):
              self.next_data_expected_time and
              self.next_data_expected_time < timestamp):
 
-            start_time = time.time()
+            # start_time = time.time()
 
             while True:
                 try:
 
                     carla_sensor_data = self.queue.get_nowait() # This takes the time! (~0.16 s)
-                    end_time = time.time()
-                    duration = end_time - start_time
-                    rospy.loginfo("Updating 1 took: {} s".format(duration))
+                    # end_time = time.time()
+                    # duration = end_time - start_time
+                    # rospy.loginfo("Updating 1 took: {} s".format(duration))
 
                     if carla_sensor_data.frame == frame:
                         rospy.logdebug("{}({}): process {}".format(
