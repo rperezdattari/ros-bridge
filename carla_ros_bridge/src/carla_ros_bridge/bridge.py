@@ -18,6 +18,7 @@ except ImportError:
 # Oscar
 import time
 import threading
+import math
 
 import sys
 from distutils.version import LooseVersion
@@ -272,9 +273,7 @@ class CarlaRosBridge(object):
                 frame))
             start_time_sensors = time.time()
             self._update(frame, world_snapshot.timestamp.elapsed_seconds)
-            end_time = time.time()
-            duration = end_time - start_time
-            # print('Sensor updates took ' + str(duration) + ' s')
+
             rospy.logdebug("Waiting for sensor data finished.")
             self._update_actors(set([x.id for x in world_snapshot]))
 
@@ -286,6 +285,26 @@ class CarlaRosBridge(object):
                                       "Missing command from actor ids {}".format(
                                           self._expected_ego_vehicle_control_command_ids))
                     self._all_vehicle_control_commands_received.clear()
+
+            move_camera = True
+            if move_camera:
+                spectator = self.carla_world.get_spectator()
+                spectator.set_simulate_physics(False)
+                ego_vehicle = None
+                previous_actors = set(self.actors)
+
+                for carla_actor in self.carla_world.get_actors(list(previous_actors)):
+                    if carla_actor.type_id.startswith("vehicle"):
+                        if carla_actor.attributes.get('role_name') \
+                                in self.parameters['ego_vehicle']['role_name']:
+                                    ego_vehicle = carla_actor
+
+                if ego_vehicle:
+                    # set the spectator camera to follow the ego-vehicle
+                    spectator.set_transform(self.set_camera_transform_to_ego_vehicle(ego_vehicle, carla.Location(2.0, 0.0, 2.0)))
+            else:
+                # support for static camera position (that doesn't update continuously)
+                pass
 
             if self.carla_settings.realtime:
                 # Oscar: Get the duration of the loop
@@ -301,6 +320,14 @@ class CarlaRosBridge(object):
                     event.wait(self.carla_settings.fixed_delta_seconds - duration)
                 else:
                     rospy.logwarn('Warning: Carla ROS Bridge is currently too slow to run in real-time!')
+
+
+    def set_camera_transform_to_ego_vehicle(self, ego_vehicle, vec=carla.Location(-4.0, 0, 3.0)):
+
+        location = ego_vehicle.get_transform().transform(vec)  # Transforms the relative location in vec to global
+        return carla.Transform(location, ego_vehicle.get_transform().rotation)
+        # carla.Rotation(yaw = ego_vehicle.get_transform().rotation.yaw, pitch = -35)
+
 
     def _carla_time_tick(self, carla_snapshot):
         """

@@ -67,6 +67,7 @@ class Sensor(Actor):
         self.next_data_expected_time = None
         self.sensor_tick_time = None
         self.is_event_sensor = is_event_sensor
+        # self.start_time = None
         try:
             self.sensor_tick_time = float(carla_actor.attributes["sensor_tick"])
             rospy.logdebug("Sensor tick time is {}".format(self.sensor_tick_time))
@@ -97,6 +98,13 @@ class Sensor(Actor):
         :param carla_sensor_data: carla sensor data object
         :type carla_sensor_data: carla.SensorData
         """
+
+        # if self.start_time is not None:
+        #     end_time = time.time()
+        #     duration = end_time - self.start_time
+        #     rospy.loginfo("Updating 1 took: {} s".format(duration))
+        #
+        # self.start_time = time.time()
         # This is fast
         if not rospy.is_shutdown():
             if self.synchronous_mode:
@@ -110,6 +118,8 @@ class Sensor(Actor):
                 self.publish_transform(self.get_ros_transform(
                     trans.carla_transform_to_ros_transform(carla_sensor_data.transform)))
                 self.sensor_data_updated(carla_sensor_data)
+
+
 
     @abstractmethod
     def sensor_data_updated(self, carla_sensor_data):
@@ -136,16 +146,18 @@ class Sensor(Actor):
                                       frame))
                 rospy.logdebug("{}({}): process {}".format(
                     self.__class__.__name__, self.get_id(), frame))
+
                 self.publish_transform(
                     self.get_ros_transform(
                         trans.carla_transform_to_ros_transform(carla_sensor_data.transform)))
+
                 self.sensor_data_updated(carla_sensor_data)
             except queue.Empty:
                 return
 
     def _update_synchronous_sensor(self, frame, timestamp):
 
-        # This is extremely shite
+        # double check
         while not self.next_data_expected_time or\
             (not self.queue.empty() or
              self.next_data_expected_time and
@@ -165,23 +177,14 @@ class Sensor(Actor):
                         rospy.logdebug("{}({}): process {}".format(
                             self.__class__.__name__, self.get_id(), frame))
 
-                        # end_time = time.time()
-                        # duration = end_time - start_time
-                        # rospy.loginfo("Updating 2 took: {} s".format(duration))
 
                         self.publish_transform(
                             self.get_ros_transform(
                                 trans.carla_transform_to_ros_transform(
                                     carla_sensor_data.transform)))
 
-                        # end_time = time.time()
-                        # duration = end_time - start_time
-                        # rospy.loginfo("Updating 3 took: {} s".format(duration))
-
                         self.sensor_data_updated(carla_sensor_data)  # here 2.3 ms
-                        # end_time = time.time()
-                        # duration = end_time - start_time
-                        # rospy.loginfo("Updating 4 took: {} s".format(duration))
+
                         return
                     elif carla_sensor_data.frame < frame:
                         rospy.logwarn("{}({}): skipping old frame {}, expected {}".format(
