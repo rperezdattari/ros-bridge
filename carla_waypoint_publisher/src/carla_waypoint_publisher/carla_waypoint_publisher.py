@@ -69,7 +69,7 @@ class CarlaToRosWaypointConverter(object):
             GetActorWaypoint, self.get_actor_waypoint)
 
         # set initial goal
-        #self.goal = self.world.get_map().get_spawn_points()[0]
+        self.goal = self.world.get_map().get_spawn_points()[0]
 
         self.current_route = None
         self.goal_subscriber = rospy.Subscriber(

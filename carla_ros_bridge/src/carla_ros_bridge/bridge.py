@@ -18,6 +18,7 @@ except ImportError:
 # Oscar
 import time
 import threading
+from geometry_msgs.msg import Twist
 import math
 
 import sys
@@ -123,6 +124,10 @@ class CarlaRosBridge(object):
         self._all_vehicle_control_commands_received = Event()
         self._expected_ego_vehicle_control_command_ids = []
         self._expected_ego_vehicle_control_command_ids_lock = Lock()
+
+        self.oscars_subscriber = \
+            rospy.Subscriber("/carla/ego_vehicle/twist_cmd", Twist,
+                             lambda control: self.oscars_callback())
 
         if self.carla_settings.synchronous_mode:
 
@@ -280,8 +285,8 @@ class CarlaRosBridge(object):
             if self.parameters['synchronous_mode_wait_for_vehicle_control_command']:
                 # wait for all ego vehicles to send a vehicle control command
                 if self._expected_ego_vehicle_control_command_ids:
-                    if not self._all_vehicle_control_commands_received.wait(1):
-                        rospy.logwarn("Timeout (1s) while waiting for vehicle control commands. "
+                    if not self._all_vehicle_control_commands_received.wait(3):
+                        rospy.logwarn("Timeout (3s) while waiting for vehicle control commands. "
                                       "Missing command from actor ids {}".format(
                                           self._expected_ego_vehicle_control_command_ids))
                     self._all_vehicle_control_commands_received.clear()
@@ -301,7 +306,8 @@ class CarlaRosBridge(object):
 
                 if ego_vehicle:
                     # set the spectator camera to follow the ego-vehicle
-                    spectator.set_transform(self.set_camera_transform_to_ego_vehicle(ego_vehicle, carla.Location(2.0, 0.0, 2.0)))
+                    spectator.set_transform(
+                        self.set_camera_transform_to_ego_vehicle(ego_vehicle,carla.Location(-4.0, 0.0, 2.5),pitch=-20)) # carla.Location(2.0, 0.0, 2.0),
             else:
                 # support for static camera position (that doesn't update continuously)
                 pass
@@ -322,12 +328,13 @@ class CarlaRosBridge(object):
                     rospy.logwarn('Warning: Carla ROS Bridge is currently too slow to run in real-time!')
 
 
-    def set_camera_transform_to_ego_vehicle(self, ego_vehicle, vec=carla.Location(-4.0, 0, 3.0)):
+    def set_camera_transform_to_ego_vehicle(self, ego_vehicle, vec=carla.Location(-4.0, 0, 3.0), pitch=0):
 
         location = ego_vehicle.get_transform().transform(vec)  # Transforms the relative location in vec to global
-        return carla.Transform(location, ego_vehicle.get_transform().rotation)
-        # carla.Rotation(yaw = ego_vehicle.get_transform().rotation.yaw, pitch = -35)
+        new_rotation = carla.Rotation(yaw=ego_vehicle.get_transform().rotation.yaw, pitch=pitch) #math.radians(ego_vehicle.get_transform().rotation.yaw)
+        #return carla.Transform(location, ego_vehicle.get_transform().rotation)
 
+        return carla.Transform(location, new_rotation)
 
     def _carla_time_tick(self, carla_snapshot):
         """
@@ -397,10 +404,10 @@ class CarlaRosBridge(object):
                 # remove actor
                 actor = self.actors[id_to_delete]
                 with self.update_lock:
-                    rospy.loginfo("Remove {}(id={}, parent_id={}, prefix={})".format(
-                        actor.__class__.__name__, actor.get_id(),
-                        actor.get_parent_id(),
-                        actor.get_prefix()))
+                    # rospy.loginfo("Remove {}(id={}, parent_id={}, prefix={})".format(
+                    #     actor.__class__.__name__, actor.get_id(),
+                    #     actor.get_parent_id(),
+                    #     actor.get_prefix()))
                     actor.destroy()
                     del self.actors[id_to_delete]
 
@@ -408,10 +415,10 @@ class CarlaRosBridge(object):
                 updated_pseudo_actors = []
                 for pseudo_actor in self.pseudo_actors:
                     if pseudo_actor.get_parent_id() == id_to_delete:
-                        rospy.loginfo("Remove {}(parent_id={}, prefix={})".format(
-                            pseudo_actor.__class__.__name__,
-                            pseudo_actor.get_parent_id(),
-                            pseudo_actor.get_prefix()))
+                        # rospy.loginfo("Remove {}(parent_id={}, prefix={})".format(
+                        #     pseudo_actor.__class__.__name__,
+                        #     pseudo_actor.get_parent_id(),
+                        #     pseudo_actor.get_prefix()))
                         pseudo_actor.destroy()
                         del pseudo_actor
                     else:
@@ -532,19 +539,19 @@ class CarlaRosBridge(object):
         else:
             actor = Actor(carla_actor, parent, self)
 
-        rospy.loginfo("Created {}(id={}, parent_id={},"
-                      " type={}, prefix={}, attributes={})".format(
-                          actor.__class__.__name__, actor.get_id(),
-                          actor.get_parent_id(), carla_actor.type_id,
-                          actor.get_prefix(), carla_actor.attributes))
+        # rospy.loginfo("Created {}(id={}, parent_id={},"
+        #               " type={}, prefix={}, attributes={})".format(
+        #                   actor.__class__.__name__, actor.get_id(),
+        #                   actor.get_parent_id(), carla_actor.type_id,
+        #                   actor.get_prefix(), carla_actor.attributes))
         with self.update_lock:
             self.actors[carla_actor.id] = actor
 
         for pseudo_actor in pseudo_actors:
-            rospy.loginfo("Created {}(parent_id={}, prefix={})".format(
-                pseudo_actor.__class__.__name__,
-                pseudo_actor.get_parent_id(),
-                pseudo_actor.get_prefix()))
+            # rospy.loginfo("Created {}(parent_id={}, prefix={})".format(
+            #     pseudo_actor.__class__.__name__,
+            #     pseudo_actor.get_parent_id(),
+            #     pseudo_actor.get_prefix()))
             with self.update_lock:
                 self.pseudo_actors.append(pseudo_actor)
 
@@ -589,6 +596,11 @@ class CarlaRosBridge(object):
                 rospy.logwarn("Update actor {}({}) failed: {}".format(
                     self.actors[actor_id].__class__.__name__, actor_id, e))
                 continue
+
+    # For waiting on the vehicle command when using '/carla/ego_vehicle/twist_cmd' !
+    def oscars_callback(self):
+        with self._expected_ego_vehicle_control_command_ids_lock:
+            self._all_vehicle_control_commands_received.set()
 
     def _ego_vehicle_control_applied_callback(self, ego_vehicle_id):
         if not self.carla_settings.synchronous_mode or \
