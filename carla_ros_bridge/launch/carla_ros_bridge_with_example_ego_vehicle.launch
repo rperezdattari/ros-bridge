@@ -18,6 +18,8 @@
   <arg name='synchronous_mode_wait_for_vehicle_control_command' default=''/>
   <arg name='fixed_delta_seconds' default=''/>
 
+  <include file="$(find carla_ackermann_control)/launch/carla_ackermann_control.launch">
+  </include>
 
   <include file="$(find carla_ros_bridge)/launch/carla_ros_bridge.launch">
     <arg name='host' value='$(arg host)'/>
