@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (c) 2020 Intel Corporation
 #
@@ -28,7 +28,7 @@ class ScenarioRunnerRunner(ApplicationRunner):
         """
         Executes scenario
         """
-        cmdline = ["/usr/bin/python", "{}/scenario_runner.py".format(self._path),
+        cmdline = ["/usr/bin/python3", "{}/scenario_runner.py".format(self._path),
                    "--openscenario", "{}".format(scenario_file),
                    "--timeout", "1000000",
                    "--host", self._host,

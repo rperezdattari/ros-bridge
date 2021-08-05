@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (c) 2020 Intel Corporation
 #
@@ -30,7 +30,7 @@ class TrafficLightsSensor(PseudoActor):
         :param node: node-handle
         :type node: carla_ros_bridge.CarlaRosBridge
         :param actor_list: current list of actors
-        :type actor_list: map(carla-actor-id -> python-actor-object)
+        :type actor_list: map(carla-actor-id -> python3-actor-object)
         """
 
         super(TrafficLightsSensor, self).__init__(parent=parent,

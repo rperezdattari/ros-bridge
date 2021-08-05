@@ -5,7 +5,7 @@ Setup for carla_waypoint_publisher
 """
 
 from distutils.core import setup
-from catkin_pkg.python_setup import generate_distutils_setup
+from catkin_pkg.python3_setup import generate_distutils_setup
 
 d = generate_distutils_setup(
     packages=['carla_waypoint_publisher'],

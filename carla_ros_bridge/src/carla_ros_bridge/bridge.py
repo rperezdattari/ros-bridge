@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (c) 2018-2020 Intel Corporation
 #
@@ -665,7 +665,7 @@ def main():
         # check carla version
         dist = pkg_resources.get_distribution("carla")
         if LooseVersion(dist.version) != LooseVersion(CarlaRosBridge.CARLA_VERSION):
-            rospy.logfatal("CARLA python module version {} required. Found: {}".format(
+            rospy.logfatal("CARLA python3 module version {} required. Found: {}".format(
                 CarlaRosBridge.CARLA_VERSION, dist.version))
             sys.exit(1)
 

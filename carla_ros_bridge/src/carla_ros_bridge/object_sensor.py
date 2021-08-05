@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (c) 2019 Intel Corporation
 #
@@ -33,7 +33,7 @@ class ObjectSensor(PseudoActor):
         :param node: node-handle
         :type node: carla_ros_bridge.CarlaRosBridge
         :param actor_list: current list of actors
-        :type actor_list: map(carla-actor-id -> python-actor-object)
+        :type actor_list: map(carla-actor-id -> python3-actor-object)
         :param filtered_id: id to filter from actor_list
         :type filtered_id: int
         """

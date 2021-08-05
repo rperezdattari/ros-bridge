@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (c) 2019 Intel Corporation
 #
@@ -13,9 +13,9 @@ import rospy
 import rospkg
 
 from qt_gui.plugin import Plugin
-from python_qt_binding import loadUi
-from python_qt_binding.QtWidgets import QWidget  # pylint: disable=no-name-in-module, import-error
-from python_qt_binding.QtGui import QPixmap, QIcon  # pylint: disable=no-name-in-module, import-error
+from python3_qt_binding import loadUi
+from python3_qt_binding.QtWidgets import QWidget  # pylint: disable=no-name-in-module, import-error
+from python3_qt_binding.QtGui import QPixmap, QIcon  # pylint: disable=no-name-in-module, import-error
 
 from carla_msgs.msg import CarlaControl, CarlaStatus
 
