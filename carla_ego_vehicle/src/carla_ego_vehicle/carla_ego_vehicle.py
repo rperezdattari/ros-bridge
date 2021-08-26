@@ -96,6 +96,11 @@ class CarlaEgoVehicle(object):
         :return:
         """
         self.actor_spawnpoint = initial_pose.pose.pose
+        rospy.loginfo("Received {} at x={} y={} z={} yaw={}".format(self.role_name,
+                                                                 self.actor_spawnpoint.position.x,
+                                                                 self.actor_spawnpoint.position.y,
+                                                                 self.actor_spawnpoint.position.z,
+                                                                 self.actor_spawnpoint.orientation.w))
         self.restart()
 
     def restart(self):
@@ -124,7 +129,7 @@ class CarlaEgoVehicle(object):
             if self.actor_spawnpoint:
                 spawn_point = carla.Transform()
                 spawn_point.location.x = self.actor_spawnpoint.position.x
-                spawn_point.location.y = -self.actor_spawnpoint.position.y
+                spawn_point.location.y = self.actor_spawnpoint.position.y
                 spawn_point.location.z = self.actor_spawnpoint.position.z + \
                     2  # spawn 2m above ground
                 quaternion = (
@@ -134,7 +139,8 @@ class CarlaEgoVehicle(object):
                     self.actor_spawnpoint.orientation.w
                 )
                 _, _, yaw = euler_from_quaternion(quaternion)
-                spawn_point.rotation.yaw = -math.degrees(yaw)
+                spawn_point.rotation.yaw = math.degrees(yaw)
+                print("hello")
                 rospy.loginfo("Spawn {} at x={} y={} z={} yaw={}".format(self.role_name,
                                                                          spawn_point.location.x,
                                                                          spawn_point.location.y,
