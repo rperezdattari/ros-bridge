@@ -1,11 +1,24 @@
 {
     "sensors": [
         {
+            "type": "sensor.camera.depth",
+            "id": "front",
+            "x": 2.0, "y": 0.0, "z": 2.0, "roll": 0.0, "pitch": 0.0, "yaw": 0.0,
+            "image_size_x": 256,
+            "image_size_y": 256,
+            "lens_circle_falloff": 5.0,
+            "lens_circle_multiplier": 0.0,
+            "lens_k": -1.0,
+            "lens_kcube": 0.0,
+            "lens_x_size": 0.08,
+            "lens_y_size": 0.08
+        },
+        {
             "type": "sensor.camera.rgb",
             "id": "front",
             "x": 2.0, "y": 0.0, "z": 2.0, "roll": 0.0, "pitch": 0.0, "yaw": 0.0,
-            "image_size_x": 512,
-            "image_size_y": 512,
+            "image_size_x": 256,
+            "image_size_y": 256,
             "fov": 90.0,
             "sensor_tick": 0.05,
             "gamma": 2.2,
@@ -83,3 +96,4 @@
         }
     ]
 }
+ 
