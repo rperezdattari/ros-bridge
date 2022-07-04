@@ -63,7 +63,7 @@ class CarlaRosBridge(object):
     Carla Ros bridge
     """
 
-    CARLA_VERSION = "0.9.10"
+    CARLA_VERSION = "0.9.11"
 
     def __init__(self, carla_world, params):
         """
