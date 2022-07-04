@@ -1,11 +1,18 @@
 {
     "sensors": [
         {
+            "type": "sensor.camera.depth",
+            "id": "front",
+            "x": 2.0, "y": 0.0, "z": 2.0, "roll": 0.0, "pitch": 0.0, "yaw": 0.0,
+            "image_size_x": 256,
+            "image_size_y": 256
+        },
+        {
             "type": "sensor.camera.rgb",
             "id": "front",
             "x": 2.0, "y": 0.0, "z": 2.0, "roll": 0.0, "pitch": 0.0, "yaw": 0.0,
-            "image_size_x": 512,
-            "image_size_y": 512,
+            "image_size_x": 256,
+            "image_size_y": 256,
             "fov": 90.0,
             "sensor_tick": 0.05,
             "gamma": 2.2,
@@ -83,3 +90,4 @@
         }
     ]
 }
+

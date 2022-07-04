@@ -164,7 +164,7 @@ class CarlaEgoVehicle(object):
                     spawn_point = secure_random.choice(
                         spawn_points) if spawn_points else carla.Transform()
                     self.player = self.world.try_spawn_actor(blueprint, spawn_point)
-                    self.player_created = True
+                    self.player_created = True	
 
         if self.player_created:
             # Read sensors from file
@@ -274,10 +274,14 @@ class CarlaEgoVehicle(object):
         client.set_timeout(self.timeout)
         self.world = client.get_world()
         self.restart()
+        #while not rospy.is_shutdown():
+        #    print('CONTROL:', self.player.get_control())
         try:
             rospy.spin()
         except rospy.ROSInterruptException:
             pass
+            
+        
 
 # ==============================================================================
 # -- main() --------------------------------------------------------------------
@@ -289,12 +293,12 @@ def main():
     main function
     """
     ego_vehicle = CarlaEgoVehicle()
+    print('AAAAAAA')
     try:
         ego_vehicle.run()
     finally:
         if ego_vehicle is not None:
             ego_vehicle.destroy()
-
 
 if __name__ == '__main__':
     main()
